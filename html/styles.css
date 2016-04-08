@@ -1,0 +1,13 @@
+/* chat styling */
+
+#chat textarea {
+  width: 100%;
+}
+
+#chat-messages {
+  overflow: scroll;
+}
+
+#send-chat {
+  float: right;
+}

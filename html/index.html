@@ -1,0 +1,73 @@
+<!doctype html>
+<!--
+  Material Design Lite
+  Copyright 2016 Google Inc. All rights reserved.
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+      https://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Cloud Vision Rock Paper Scissors</title>
+
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.cyan-light_blue.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+    <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script defer src="js/layout.js"></script>
+    <script defer src="js/script.js"></script>
+</head>
+<body>
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <header class="mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
+        <div class="mdl-layout__header-row">
+            <span class="mdl-layout-title">Cloud Vision Rock Paper Scissors</span>
+            <div class="mdl-layout-spacer"></div>
+            <button id="login" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                Login
+            </button>
+        </div>
+    </header>
+    <main class="mdl-layout__content mdl-color--grey-100">
+        <div class="mdl-grid">
+            <div id="game" class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+                <div class="mdl-card">
+                    Game will play here
+                </div>
+            </div>
+            <div id="chat" class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--4-col mdl-card">
+                <div class="mdl-card__title">
+                    Group Chat
+                </div>
+                <div id="chat-messages" class="mdl-card__actions mdl-card--border">
+                    Chat will go here.
+                </div>
+                <div class="mdl-card__actions mdl-card--border">
+                    <div class="mdl-textfield mdl-js-textfield">
+                        <textarea class="mdl-textfield__input" type="text" rows= "1" id="chat-message"></textarea>
+                        <label class="mdl-textfield__label" for="chat-message">Chat message...</label>
+                    </div>
+                    <button id="send-chat" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                        Send
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+</body>
+</html>
