@@ -24,14 +24,18 @@ var Layout = (function() {
     //public functions
     return {
         fillVertically: function() {
+            console.log("filling!");
             //fill vertically
             var header = document.querySelector("header");
             var chat = document.querySelector("#chat");
             chat.style.height = (window.innerHeight - header.clientHeight - 32) + "px";
 
             //expand out chat area
+            var messages = document.querySelector("#chat-messages");
+            var header = document.querySelector("#chat-header");
+            var input = document.querySelector("#chat-input");
 
-
+            messages.style.height = (chat.clientHeight - (header.clientHeight + input.clientHeight)) + "px";
         }
     }
 })();

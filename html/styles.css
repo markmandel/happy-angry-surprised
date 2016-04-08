@@ -5,7 +5,7 @@
 }
 
 #chat-messages {
-  overflow: scroll;
+  overflow-y: auto;
 }
 
 #send-chat {
