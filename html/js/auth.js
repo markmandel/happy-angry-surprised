@@ -17,3 +17,15 @@
 /**
  * Module for managing auth
  */
+
+var Auth = (function() {
+
+    return {
+
+        //initialisation function for auth
+        init: function() {
+            
+        }
+    }
+
+})();

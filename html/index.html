@@ -25,8 +25,14 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.cyan-light_blue.min.css">
     <link rel="stylesheet" href="styles.css">
+
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="425564002590-si32gopjjvfqo5ogtq359gp6328hsehe.apps.googleusercontent.com">
+    <meta name="google-signin-cookiepolicy" content="single_host_origin">
+
     <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
-    <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/3.0.0-eap.2/firebase.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script defer src="js/layout.js"></script>
     <script defer src="js/script.js"></script>
 </head>
@@ -41,9 +47,25 @@
                 Join Game
             </button>
             &nbsp;
+            <!--
+            <div class="g-signin2" data-onsuccess="onSignIn"></div>
+            -->
             <button id="login" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                 Login
             </button>
+            <dialog id="login-dialog" class="mdl-dialog">
+                <h4 class="mdl-dialog__title">Login</h4>
+                <div class="mdl-dialog__content">
+                    <p>
+                        Login with Username and Password
+                        *TODO*
+                    </p>
+                </div>
+                <div class="mdl-dialog__actions">
+                    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+                </div>
+            </dialog>
+
         </div>
     </header>
     <main class="mdl-layout__content mdl-color--grey-100">
@@ -62,10 +84,10 @@
                 </div>
                 <div id="chat-input" class="mdl-card__actions mdl-card--border">
                     <div class="mdl-textfield mdl-js-textfield">
-                        <textarea class="mdl-textfield__input" type="text" rows= "2" id="chat-message"></textarea>
+                        <textarea disabled class="mdl-textfield__input" type="text" rows= "2" id="chat-message"></textarea>
                         <label class="mdl-textfield__label" for="chat-message">Chat message...</label>
                     </div>
-                    <button id="send-chat" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                    <button disabled id="send-chat" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                         Send
                     </button>
                 </div>
