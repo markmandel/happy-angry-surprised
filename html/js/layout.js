@@ -24,7 +24,6 @@ var Layout = (function() {
     //public functions
     return {
         fillVertically: function() {
-            console.log("filling!");
             //fill vertically
             var header = document.querySelector("header");
             var chat = document.querySelector("#chat");

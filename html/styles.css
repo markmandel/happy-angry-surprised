@@ -2,6 +2,7 @@
 
 #chat textarea {
   width: 100%;
+  resize: none;
 }
 
 #chat-messages {
