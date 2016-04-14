@@ -86,11 +86,13 @@ var Session = (function() {
                 'idToken': googleUser.getAuthResponse().id_token
             });
             signIn(credential, function() {
+                console.log("success function being called?");
+
                 var login = document.querySelector("#login");
                 var logout = document.querySelector("#google-logout");
 
-                login.style.visibility = "none";
-                logout.style.visibility = "block";
+                login.style.display = "none";
+                logout.style.display = "block";
             });
         }
     }
