@@ -43,6 +43,7 @@ clean:
 # Start a dev shell
 shell:
 	mkdir -p ~/.config/gcloud
+	mkdir -p ~/.config/configstore
 	docker run --rm \
 		--name=$(NAME) \
 		-P=true \
@@ -51,6 +52,8 @@ shell:
 		-e HOST_UID=`id -u` \
 		-e HOST_USER=$(USER) \
 		-v ~/.config/gcloud:/home/$(USER)/.config/gcloud \
+		-v ~/.config/configstore:/home/$(USER)/.config/configstore\
+		-v ~/.gitconfig:/home/$(USER)/.gitconfig \
 		-v $(project_path)/dev/zshrc:/home/$(USER)/.zshrc \
 		-v $(project_path):/home/$(USER)/project \
 		-w /home/$(USER)/project \

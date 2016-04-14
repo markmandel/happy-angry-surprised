@@ -36,10 +36,15 @@ var Session = (function() {
     /*
      * Sign the user in, with the given credentials
      * */
-    function signIn(credential) {
+    function signIn(credential, successCallback) {
+        var noop = function(){};
+
+        successCallback = successCallback || noop();
+
         firebase.auth().signInWithCredential(credential).then(function(user) {
             console.log('Sign In Success', user);
             link(credential);
+            successCallback();
             closeLoginDialog();
         }, function(error) {
             console.error('Sign In Error', error);
@@ -80,7 +85,13 @@ var Session = (function() {
             var credential = firebase.auth.GoogleAuthProvider.credential({
                 'idToken': googleUser.getAuthResponse().id_token
             });
-            signIn(credential);
+            signIn(credential, function() {
+                var login = document.querySelector("#login");
+                var logout = document.querySelector("#google-logout");
+
+                login.style.visibility = "none";
+                logout.style.visibility = "block";
+            });
         }
     }
 })();
