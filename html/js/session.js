@@ -20,9 +20,50 @@
  * Module for managing auth
  */
 var Session = (function() {
-    return {
 
-        //initialisation function for auth
+    /*
+     * Linking for the Google Account
+     * */
+    function link(credential) {
+        console.log("Attempting to link account");
+        firebase.auth().currentUser.link(credential).then(function(user) {
+            console.log("Account linking success", user);
+        }, function(error) {
+            console.log("Account linking error", error);
+        });
+    }
+
+    /*
+     * Sign the user in, with the given credentials
+     * */
+    function signIn(credential) {
+        firebase.auth().signInWithCredential(credential).then(function(user) {
+            console.log('Sign In Success', user);
+            link(credential);
+            closeLoginDialog();
+        }, function(error) {
+            console.error('Sign In Error', error);
+            closeLoginDialog();
+        });
+    }
+
+    /*
+     * Close the dialog, if it is open
+     * */
+    function closeLoginDialog() {
+        var dialog = document.querySelector("#login-dialog");
+        if (dialog.open) {
+            dialog.close();
+        }
+    }
+
+    /*
+     * Exported functions
+     * */
+    return {
+        /*
+         * initialisation function of this module
+         * */
         init: function() {
             var login = document.querySelector("#login");
             var dialog = document.querySelector("#login-dialog");
@@ -31,27 +72,22 @@ var Session = (function() {
             })
         },
 
+        /*
+         * Google sign in
+         * */
         googleSignin: function(googleUser) {
             console.log("Google Signin", googleUser.getAuthResponse().id_token);
-
             var credential = firebase.auth.GoogleAuthProvider.credential({
-                'idToken' : googleUser.getAuthResponse().id_token
+                'idToken': googleUser.getAuthResponse().id_token
             });
-
-            console.log("credential: ", credential);
-
-            firebase.auth().signInWithCredential(credential).then(function(user) {
-                console.log('Sign In Success', user);
-            }, function(error) {
-                console.error('Sign In Error', error);
-            });
+            signIn(credential);
         }
     }
 })();
 
 /*
-* Make life easier for the google signin button
-* */
+ * Make life easier for the google signin button, have a global function
+ * */
 function googleSignin(googleUser) {
     Session.googleSignin(googleUser);
 }
