@@ -22,6 +22,14 @@
 var Account = (function(){
 
     return {
+        /*
+        * Initialisation function for the module
+        * */
+        init: function() {
+
+        }
+
+        
 
     }
 
