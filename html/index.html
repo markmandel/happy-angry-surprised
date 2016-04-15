@@ -82,7 +82,28 @@
                     </div>
                 </div>
             </dialog>
-
+            <dialog id="create-user-dialog" class="mdl-dialog">
+                <h4 class="mdl-dialog__title">Create Account</h4>
+                <div class="mdl-dialog__content">
+                    <form action="#">
+                        <div class="mdl-textfield mdl-js-textfield">
+                            <input class="mdl-textfield__input" type="text" id="entry-displayname">
+                            <label class="mdl-textfield__label" for="entry-username">Display Name</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield">
+                            <input class="mdl-textfield__input" type="text" id="entry-username">
+                            <label class="mdl-textfield__label" for="entry-username">Username</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield">
+                            <input class="mdl-textfield__input" type="password" id="entry-password">
+                            <label class="mdl-textfield__label" for="entry-password">Password</label>
+                        </div>
+                        <button id="entry-submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                            Create
+                        </button>
+                    </form>
+                </div>
+            </dialog>
         </div>
     </header>
     <main class="mdl-layout__content mdl-color--grey-100">

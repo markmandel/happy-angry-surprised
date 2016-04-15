@@ -48,27 +48,18 @@ var Session = (function() {
      * Sign the user in, with the given credentials
      * */
     function signIn(credential, successCallback) {
-        successCallback = successCallback || function(){};
+        successCallback = successCallback || function() {
+                };
 
         firebase.auth().signInWithCredential(credential).then(function(user) {
             console.log('Sign In Success', user);
             link(credential);
             successCallback();
-            closeLoginDialog();
+            Session.closeLoginDialog();
         }, function(error) {
             console.error('Sign In Error', error);
-            closeLoginDialog();
+            Session.closeLoginDialog();
         });
-    }
-
-    /*
-     * Close the dialog, if it is open
-     * */
-    function closeLoginDialog() {
-        var dialog = document.querySelector("#login-dialog");
-        if (dialog.open) {
-            dialog.close();
-        }
     }
 
     /*
@@ -85,6 +76,16 @@ var Session = (function() {
                 dialog.showModal();
             });
             document.querySelector("#google-logout").addEventListener("click", googleSignout);
+        },
+
+        /*
+         * Close the dialog, if it is open
+         * */
+        closeLoginDialog: function() {
+            var dialog = document.querySelector("#login-dialog");
+            if (dialog.open) {
+                dialog.close();
+            }
         },
 
         /*
