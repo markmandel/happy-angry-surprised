@@ -20,6 +20,7 @@
  * Module for managing auth
  */
 var Session = (function() {
+    var loginDialog;
 
     /*
      * Linking for the Google Account
@@ -70,10 +71,10 @@ var Session = (function() {
          * initialisation function of this module
          * */
         init: function() {
-            var login = document.querySelector("#login");
-            var dialog = document.querySelector("#login-dialog");
-            login.addEventListener("click", function() {
-                dialog.showModal();
+            loginDialog = document.querySelector("#login-dialog");
+
+            document.querySelector("#login").addEventListener("click", function() {
+                loginDialog.showModal();
             });
             document.querySelector("#google-logout").addEventListener("click", googleSignout);
         },
@@ -82,9 +83,8 @@ var Session = (function() {
          * Close the dialog, if it is open
          * */
         closeLoginDialog: function() {
-            var dialog = document.querySelector("#login-dialog");
-            if (dialog.open) {
-                dialog.close();
+            if (loginDialog.open) {
+                loginDialog.close();
             }
         },
 

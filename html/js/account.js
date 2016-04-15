@@ -21,16 +21,19 @@
 * */
 var Account = (function(){
 
+    var createDialog;
+
     return {
         /*
         * Initialisation function for the module
         * */
         init: function() {
+            createDialog = document.querySelector("#create-account-dialog");
 
+            document.querySelector("#create-account").addEventListener("click", function() {
+                createDialog.showModal();
+            });
         }
-
-        
-
     }
 
 })();
