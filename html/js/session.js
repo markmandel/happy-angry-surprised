@@ -20,6 +20,9 @@
  * Module for managing auth
  */
 var Session = (function() {
+    function noop() {
+    }
+
     var loginDialog;
 
     /*
@@ -37,11 +40,13 @@ var Session = (function() {
     /*
      * Sign out of the google login
      * */
-    function googleSignout() {
+    function googleSignout(successCallback) {
+        successCallback = successCallback || noop;
+
         var auth2 = gapi.auth2.getAuthInstance();
         auth2.signOut().then(function() {
-            console.log('User signed out.');
-            window.location.reload();
+            console.log('Google sign out');
+            successCallback();
         });
     }
 
@@ -49,8 +54,7 @@ var Session = (function() {
      * Sign the user in, with the given credentials
      * */
     function signIn(credential, successCallback) {
-        successCallback = successCallback || function() {
-                };
+        successCallback = successCallback || noop;
 
         firebase.auth().signInWithCredential(credential).then(function(user) {
             console.log('Sign In Success', user);
@@ -76,7 +80,14 @@ var Session = (function() {
             document.querySelector("#login").addEventListener("click", function() {
                 loginDialog.showModal();
             });
-            document.querySelector("#google-logout").addEventListener("click", googleSignout);
+            document.querySelector("#google-logout").addEventListener("click", function() {
+                firebase.auth().signOut().then(function() {
+                    console.log("Firebase signed out");
+                    googleSignout(function() {
+                        window.location.reload();
+                    });
+                })
+            });
         },
 
         /*
@@ -100,11 +111,8 @@ var Session = (function() {
             signIn(credential, function() {
                 console.log("success function being called?");
 
-                var login = document.querySelector("#login");
-                var logout = document.querySelector("#google-logout");
-
-                login.style.display = "none";
-                logout.style.display = "block";
+                document.querySelector("#login").style.display = "none";
+                document.querySelector("#google-logout").style.display = "block";
             });
         }
     }
