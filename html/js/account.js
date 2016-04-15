@@ -45,9 +45,12 @@ var Account = (function() {
         });
 
         if (valid) {
-            //do actual work
+            //TODO: do actual work to create account
 
             createDialog.close();
+        } else {
+            var data = {message: "All fields required"};
+            document.querySelector("#snackbar").MaterialSnackbar.showSnackbar(data);
         }
     }
 
