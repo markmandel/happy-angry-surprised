@@ -17,22 +17,55 @@
 "use strict";
 
 /*
-* Module for managing manual Accounts
-* */
-var Account = (function(){
+ * Module for managing manual Accounts
+ * */
+var Account = (function() {
 
     var createDialog;
 
+    /*
+     * Do the work to actually create an account
+     * with firebase
+     * */
+    function submitCreateAccount() {
+        //fields
+        var displayName = document.querySelector("#entry-displayname");
+        var email = document.querySelector("#entry-email");
+        var password = document.querySelector("#entry-password");
+
+        //validate
+        var valid = true;
+        [displayName, email, password].forEach(function(item) {
+            if (item.value == "") {
+                valid = false;
+                item.parentElement.classList.add("is-invalid");
+            } else {
+                item.parentElement.classList.remove("is-invalid");
+            }
+        });
+
+        if (valid) {
+            //do actual work
+
+            createDialog.close();
+        }
+    }
+
+    /*
+     * Exported functions
+     * */
     return {
         /*
-        * Initialisation function for the module
-        * */
+         * Initialisation function for the module
+         * */
         init: function() {
             createDialog = document.querySelector("#create-account-dialog");
 
             document.querySelector("#create-account").addEventListener("click", function() {
                 createDialog.showModal();
             });
+
+            document.querySelector("#entry-submit").addEventListener("click", submitCreateAccount);
         }
     }
 
