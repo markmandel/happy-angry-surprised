@@ -3,6 +3,15 @@
   display: none;
 }
 
+#google-signin {
+  margin-top: 20px;
+}
+
+#google-signin strong {
+  display: block;
+  margin-bottom: 20px;
+}
+
 /* chat styling */
 
 #chat textarea {

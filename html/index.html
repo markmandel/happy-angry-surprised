@@ -58,7 +58,24 @@
             <dialog id="login-dialog" class="mdl-dialog">
                 <h4 class="mdl-dialog__title">Login</h4>
                 <div class="mdl-dialog__content">
-                    <div class="g-signin2" data-onsuccess="googleSignin"></div>
+                    <form action="#">
+                        <div class="mdl-textfield mdl-js-textfield">
+                            <input class="mdl-textfield__input" type="text" id="username">
+                            <label class="mdl-textfield__label" for="username">Username</label>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield">
+                            <input class="mdl-textfield__input" type="password" id="password">
+                            <label class="mdl-textfield__label" for="password">Password</label>
+                        </div>
+                        <button id="sign-in" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                            Login
+                        </button>
+                    </form>
+
+                    <div id="google-signin">
+                        <strong>OR</strong>
+                        <div class="g-signin2" data-onsuccess="googleSignin"></div>
+                    </div>
                 </div>
             </dialog>
 
