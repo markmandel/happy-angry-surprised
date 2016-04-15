@@ -45,9 +45,17 @@ var Account = (function() {
         });
 
         if (valid) {
-            //TODO: do actual work to create account
-
-            createDialog.close();
+            firebase.auth().createUserWithEmailAndPassword(email.value, password.value).then(function(user) {
+                console.log('Create user and sign in Success', user);
+                //add the displayname
+                user.updateProfile({displayName: displayName});
+                createDialog.close();
+                Session.closeLoginDialog();
+            }, function(error) {
+                console.error('Create user and sign in Error', error);
+                createDialog.close();
+                Session.closeLoginDialog();
+            });
         } else {
             var data = {message: "All fields required"};
             document.querySelector("#snackbar").MaterialSnackbar.showSnackbar(data);

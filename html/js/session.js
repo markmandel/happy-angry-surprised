@@ -46,15 +46,6 @@ var Session = (function() {
     }
 
     /*
-     * Close the dialog, if it is open
-     * */
-    function closeLoginDialog() {
-        if (loginDialog.open) {
-            loginDialog.close();
-        }
-    }
-
-    /*
      * Sign the user in, with the given credentials
      * */
     function signIn(credential, successCallback) {
@@ -65,10 +56,10 @@ var Session = (function() {
             console.log('Sign In Success', user);
             link(credential);
             successCallback();
-            closeLoginDialog();
+            Session.closeLoginDialog();
         }, function(error) {
             console.error('Sign In Error', error);
-            closeLoginDialog();
+            Session.closeLoginDialog();
         });
     }
 
@@ -86,6 +77,16 @@ var Session = (function() {
                 loginDialog.showModal();
             });
             document.querySelector("#google-logout").addEventListener("click", googleSignout);
+        },
+
+        /*
+         * Close the dialog, if it is open
+         * */
+        closeLoginDialog: function() {
+            var dialog = document.querySelector("#login-dialog");
+            if (dialog.open) {
+                dialog.close();
+            }
         },
 
         /*
