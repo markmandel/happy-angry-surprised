@@ -34,12 +34,21 @@ var Session = (function() {
     }
 
     /*
+     * Sign out of the google login
+     * */
+    function googleSignout() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function() {
+            console.log('User signed out.');
+            window.location.reload();
+        });
+    }
+
+    /*
      * Sign the user in, with the given credentials
      * */
     function signIn(credential, successCallback) {
-        var noop = function(){};
-
-        successCallback = successCallback || noop();
+        successCallback = successCallback || function(){};
 
         firebase.auth().signInWithCredential(credential).then(function(user) {
             console.log('Sign In Success', user);
@@ -74,7 +83,8 @@ var Session = (function() {
             var dialog = document.querySelector("#login-dialog");
             login.addEventListener("click", function() {
                 dialog.showModal();
-            })
+            });
+            document.querySelector("#google-logout").addEventListener("click", googleSignout);
         },
 
         /*
