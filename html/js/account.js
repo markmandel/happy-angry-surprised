@@ -23,6 +23,8 @@ var Account = (function() {
 
     var createDialog;
 
+    //TODO: Shift this into session.js, since creating an account actually logs you in.
+
     /*
      * Do the work to actually create an account
      * with firebase
