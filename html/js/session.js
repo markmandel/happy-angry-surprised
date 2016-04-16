@@ -24,6 +24,8 @@ var Session = (function() {
     }
 
     var loginDialog;
+    var googleProvider = false;
+    var firebaseProvider = false;
 
     /*
      * Linking for the Google Account
@@ -68,6 +70,16 @@ var Session = (function() {
     }
 
     /*
+    * Firebase handler for when authentication state
+    * changes
+    * */
+    function authStateChangeListener(user) {
+        console.log("Auth state change: ", user);
+
+
+    }
+
+    /*
      * Exported functions
      * */
     return {
@@ -76,6 +88,8 @@ var Session = (function() {
          * */
         init: function() {
             loginDialog = document.querySelector("#login-dialog");
+
+            firebase.auth().onAuthStateChanged(authStateChangeListener);
 
             document.querySelector("#login").addEventListener("click", function() {
                 loginDialog.showModal();
