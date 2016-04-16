@@ -20,15 +20,12 @@
  * Module for managing auth
  */
 var Session = (function() {
-    function noop() {
-    }
-
     var loginDialog;
     var googleProvider = false;
     var firebaseProvider = false;
 
     /*
-     * Linking for the Google Account
+     * Take the credential, and link it
      * */
     function link(credential) {
         console.log("Attempting to link account");
@@ -40,28 +37,12 @@ var Session = (function() {
     }
 
     /*
-     * Sign out of the google login
-     * */
-    function googleSignout(successCallback) {
-        successCallback = successCallback || noop;
-
-        var auth2 = gapi.auth2.getAuthInstance();
-        auth2.signOut().then(function() {
-            console.log('Google sign out');
-            successCallback();
-        });
-    }
-
-    /*
      * Sign the user in, with the given credentials
      * */
-    function signIn(credential, successCallback) {
-        successCallback = successCallback || noop;
-
+    function signIn(credential) {
         firebase.auth().signInWithCredential(credential).then(function(user) {
             console.log('Sign In Success', user);
             link(credential);
-            successCallback();
             Session.closeLoginDialog();
         }, function(error) {
             console.error('Sign In Error', error);
@@ -76,7 +57,22 @@ var Session = (function() {
     function authStateChangeListener(user) {
         console.log("Auth state change: ", user);
 
-
+        //signin
+        if (user) {
+            console.log("I am now logged in");
+            document.querySelector("#login").style.display = "none";
+            document.querySelector("#logout").style.display = "block";
+        } else { //signout
+            if (googleProvider) {
+                gapi.auth2.getAuthInstance().signOut().then(function() {
+                    console.log('Google sign out');
+                    window.location.reload();
+                });
+            } else if (firebaseProvider) {
+                console.log("TODO: Make firebase provider work");
+                window.location.reload();
+            }
+        }
     }
 
     /*
@@ -94,13 +90,8 @@ var Session = (function() {
             document.querySelector("#login").addEventListener("click", function() {
                 loginDialog.showModal();
             });
-            document.querySelector("#google-logout").addEventListener("click", function() {
-                firebase.auth().signOut().then(function() {
-                    console.log("Firebase signed out");
-                    googleSignout(function() {
-                        window.location.reload();
-                    });
-                })
+            document.querySelector("#logout").addEventListener("click", function() {
+                firebase.auth().signOut();
             });
         },
 
@@ -122,12 +113,8 @@ var Session = (function() {
             var credential = firebase.auth.GoogleAuthProvider.credential({
                 'idToken': googleUser.getAuthResponse().id_token
             });
-            signIn(credential, function() {
-                console.log("success function being called?");
-
-                document.querySelector("#login").style.display = "none";
-                document.querySelector("#google-logout").style.display = "block";
-            });
+            googleProvider = true;
+            signIn(credential);
         }
     }
 })();
