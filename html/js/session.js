@@ -20,104 +20,152 @@
  * Module for managing auth
  */
 var Session = (function() {
-    var loginDialog;
-    var googleProvider = false;
-    var firebaseProvider = false;
+            var loginDialog;
+            var createDialog;
+            var googleProvider = false;
+            var firebaseProvider = false;
 
-    /*
-     * Take the credential, and link it
-     * */
-    function link(credential) {
-        console.log("Attempting to link account");
-        firebase.auth().currentUser.link(credential).then(function(user) {
-            console.log("Account linking success", user);
-        }, function(error) {
-            console.log("Account linking error", error);
-        });
-    }
+            /*
+             * Firebase handler for when authentication state
+             * changes
+             * */
+            function authStateChangeListener(user) {
+                console.log("Auth state change: ", user);
 
-    /*
-     * Sign the user in, with the given credentials
-     * */
-    function signIn(credential) {
-        firebase.auth().signInWithCredential(credential).then(function(user) {
-            console.log('Sign In Success', user);
-            link(credential);
-            Session.closeLoginDialog();
-        }, function(error) {
-            console.error('Sign In Error', error);
-            Session.closeLoginDialog();
-        });
-    }
+                //signin
+                if (user) {
+                    console.log("I am now logged in");
+                    document.querySelector("#login").style.display = "none";
+                    document.querySelector("#logout").style.display = "block";
+                } else { //signout
+                    if (googleProvider) {
+                        gapi.auth2.getAuthInstance().signOut().then(function() {
+                            console.log('Google sign out');
+                            window.location.reload();
+                        });
+                    } else if (firebaseProvider) {
+                        console.log("TODO: Make firebase provider work");
+                        window.location.reload();
+                    }
+                }
+            }
 
-    /*
-    * Firebase handler for when authentication state
-    * changes
-    * */
-    function authStateChangeListener(user) {
-        console.log("Auth state change: ", user);
-
-        //signin
-        if (user) {
-            console.log("I am now logged in");
-            document.querySelector("#login").style.display = "none";
-            document.querySelector("#logout").style.display = "block";
-        } else { //signout
-            if (googleProvider) {
-                gapi.auth2.getAuthInstance().signOut().then(function() {
-                    console.log('Google sign out');
-                    window.location.reload();
+            /*
+             * Take the credential, and link it
+             * */
+            function link(credential) {
+                console.log("Attempting to link account");
+                firebase.auth().currentUser.link(credential).then(function(user) {
+                    console.log("Account linking success", user);
+                }, function(error) {
+                    console.log("Account linking error", error);
                 });
-            } else if (firebaseProvider) {
-                console.log("TODO: Make firebase provider work");
-                window.location.reload();
             }
-        }
-    }
 
-    /*
-     * Exported functions
-     * */
-    return {
-        /*
-         * initialisation function of this module
-         * */
-        init: function() {
-            loginDialog = document.querySelector("#login-dialog");
-
-            firebase.auth().onAuthStateChanged(authStateChangeListener);
-
-            document.querySelector("#login").addEventListener("click", function() {
-                loginDialog.showModal();
-            });
-            document.querySelector("#logout").addEventListener("click", function() {
-                firebase.auth().signOut();
-            });
-        },
-
-        /*
-         * Close the dialog, if it is open
-         * */
-        closeLoginDialog: function() {
-            var dialog = document.querySelector("#login-dialog");
-            if (dialog.open) {
-                dialog.close();
+            /*
+             * Sign the user in, with the given credentials
+             * */
+            function signIn(credential) {
+                firebase.auth().signInWithCredential(credential).then(function(user) {
+                    console.log('Sign In Success', user);
+                    link(credential);
+                    closeLoginDialog();
+                }, function(error) {
+                    console.error('Sign In Error', error);
+                    closeLoginDialog();
+                });
             }
-        },
 
-        /*
-         * Google sign in
-         * */
-        googleSignin: function(googleUser) {
-            console.log("Google Signin", googleUser.getAuthResponse().id_token);
-            var credential = firebase.auth.GoogleAuthProvider.credential({
-                'idToken': googleUser.getAuthResponse().id_token
-            });
-            googleProvider = true;
-            signIn(credential);
-        }
-    }
-})();
+            /*
+             * Close the dialog, if it is open
+             * */
+            function closeLoginDialog() {
+                var dialog = document.querySelector("#login-dialog");
+                if (dialog.open) {
+                    dialog.close();
+                }
+            }
+
+            /*
+             * Do the work to actually create an account
+             * with firebase
+             * */
+            function submitCreateAccount() {
+                //fields
+                var displayName = document.querySelector("#entry-displayname");
+                var email = document.querySelector("#entry-email");
+                var password = document.querySelector("#entry-password");
+
+                //validate
+                var valid = true;
+                [displayName, email, password].forEach(function(item) {
+                    if (item.value == "") {
+                        valid = false;
+                        item.parentElement.classList.add("is-invalid");
+                    } else {
+                        item.parentElement.classList.remove("is-invalid");
+                    }
+                });
+
+                if (valid) {
+                    firebase.auth().createUserWithEmailAndPassword(email.value, password.value).then(function(user) {
+                        console.log('Create user and sign in Success', user);
+                        //add the displayname
+                        user.updateProfile({displayName: displayName});
+                        createDialog.close();
+                        closeLoginDialog();
+                    }, function(error) {
+                        console.error('Create user and sign in Error', error);
+                        createDialog.close();
+                        closeLoginDialog();
+                    });
+                } else {
+                    var data = {message: "All fields required"};
+                    document.querySelector("#snackbar").MaterialSnackbar.showSnackbar(data);
+                }
+            }
+
+            /*
+             * Exported functions
+             * */
+            return {
+                /*
+                 * initialisation function of this module
+                 * */
+                init: function() {
+                    loginDialog = document.querySelector("#login-dialog");
+
+                    firebase.auth().onAuthStateChanged(authStateChangeListener);
+
+                    //login/logout
+                    document.querySelector("#login").addEventListener("click", function() {
+                        loginDialog.showModal();
+                    });
+                    document.querySelector("#logout").addEventListener("click", function() {
+                        firebase.auth().signOut();
+                    });
+
+                    //create accounts
+                    createDialog = document.querySelector("#create-account-dialog");
+                    document.querySelector("#create-account").addEventListener("click", function() {
+                        createDialog.showModal();
+                    });
+                    document.querySelector("#entry-submit").addEventListener("click", submitCreateAccount);
+                },
+
+                /*
+                 * Google sign in
+                 * */
+                googleSignin: function(googleUser) {
+                    console.log("Google Signin", googleUser.getAuthResponse().id_token);
+                    var credential = firebase.auth.GoogleAuthProvider.credential({
+                        'idToken': googleUser.getAuthResponse().id_token
+                    });
+                    googleProvider = true;
+                    signIn(credential);
+                }
+            }
+        })();
 
 /*
  * Make life easier for the google signin button, have a global function
