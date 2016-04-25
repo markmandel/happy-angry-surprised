@@ -127,8 +127,8 @@ var Session = (function() {
         if (valid) {
             firebase.auth().createUserWithEmailAndPassword(email.value, password.value).then(function(user) {
                 console.log('Create user and sign in Success', user);
-                //add the displayname
-                user.updateProfile({displayName: displayName});
+                //add the displayName
+                user.updateProfile({displayName: displayName.value});
                 createDialog.close();
                 closeLoginDialog();
             }, function(error) {
