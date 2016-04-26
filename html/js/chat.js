@@ -63,7 +63,9 @@ var Chat = (function() {
         var item = document.createElement("li");
         item.innerHTML = "<strong>" + name + "</strong> " + message;
 
-        messages.appendChild(item);
+        var messageList = messages.querySelector("ul");
+        messageList.appendChild(item);
+        messages.scrollTop = messageList.scrollHeight;
     }
 
     /*
@@ -76,7 +78,7 @@ var Chat = (function() {
         init: function() {
             send = document.querySelector("#send-chat");
             messageField = document.querySelector("#chat-message");
-            messages = document.querySelector("#chat-messages ul");
+            messages = document.querySelector("#chat-messages");
 
             //our realtime database reference
             ref = firebase.database().ref("/chat");
