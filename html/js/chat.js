@@ -14,6 +14,57 @@
  *  limitations under the License.
  */
 
+"use strict";
+
 /**
  * Module for managing the Chat system
  */
+var Chat = (function() {
+    var send;
+    var message;
+    var ref;
+
+    function sendChatMessage() {
+        enableChat(false);
+        ref.push().set({
+            name: firebase.auth().currentUser.displayName,
+            message: message.value
+        }, function(error) {
+            if (error) {
+                console.log("Uh oh, error saving data.", error);
+                document.querySelector("#snackbar").MaterialSnackbar.showSnackbar({message: "Error sending message"});
+            } else {
+                message.value = "";
+                message.parentElement.classList.remove("is-dirty");
+            }
+
+            enableChat(true);
+        });
+    }
+
+    /*
+     * Turn on or off chat
+     * */
+    function enableChat(enable) {
+        console.log("enabling chat: ", enable);
+        [send, message].forEach(function(item) {
+            item.disabled = !enable;
+        });
+    }
+
+    return {
+        init: function() {
+            send = document.querySelector("#send-chat");
+            message = document.querySelector("#chat-message");
+
+            //our realtime database reference
+            ref = firebase.database().ref("/chat");
+
+            send.addEventListener("click", sendChatMessage);
+        },
+
+        onlogin: function() {
+            enableChat(true);
+        }
+    }
+})();

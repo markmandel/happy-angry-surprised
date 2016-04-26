@@ -43,9 +43,13 @@ var Session = (function() {
                 googleProvider = true;
             }
 
+            console.log("I am here?");
             closeLoginDialog();
             document.querySelector("#login").style.display = "none";
             document.querySelector("#logout").style.display = "block";
+
+            console.log("Do I get here?");
+            Chat.onlogin();
         } else { //signout
             if (googleProvider) {
                 gapi.auth2.getAuthInstance().signOut().then(function() {
@@ -53,7 +57,6 @@ var Session = (function() {
                     window.location.reload();
                 });
             } else if (firebaseProvider) {
-                console.log("TODO: Make firebase provider work");
                 window.location.reload();
             }
         }
