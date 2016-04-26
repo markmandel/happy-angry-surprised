@@ -84,6 +84,7 @@ var Session = (function() {
 
     /*
      * Take the credential, and link it
+     * TODO: Actually use this to link to a different account.
      * */
     function link(credential) {
         console.log("Attempting to link account");
@@ -100,7 +101,6 @@ var Session = (function() {
     function signIn(credential) {
         firebase.auth().signInWithCredential(credential).then(function(user) {
             console.log('Sign In Success', user);
-            link(credential);
         }, function(error) {
             console.error('Sign In Error', error);
         });

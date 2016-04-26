@@ -21,21 +21,35 @@
  */
 var Chat = (function() {
     var send;
-    var message;
+    var messageField;
+    var messages;
     var ref;
 
+    /*
+     * Turn on or off chat
+     * */
+    function enableChat(enable) {
+        console.log("enabling chat: ", enable);
+        [send, messageField].forEach(function(item) {
+            item.disabled = !enable;
+        });
+    }
+
+    /*
+     * Send a chat message to firebase
+     * */
     function sendChatMessage() {
         enableChat(false);
         ref.push().set({
             name: firebase.auth().currentUser.displayName,
-            message: message.value
+            message: messageField.value
         }, function(error) {
             if (error) {
                 console.log("Uh oh, error saving data.", error);
                 document.querySelector("#snackbar").MaterialSnackbar.showSnackbar({message: "Error sending message"});
             } else {
-                message.value = "";
-                message.parentElement.classList.remove("is-dirty");
+                messageField.value = "";
+                messageField.parentElement.classList.remove("is-dirty");
             }
 
             enableChat(true);
@@ -43,26 +57,52 @@ var Chat = (function() {
     }
 
     /*
-     * Turn on or off chat
+     * Add a chat message to the chat UI
      * */
-    function enableChat(enable) {
-        console.log("enabling chat: ", enable);
-        [send, message].forEach(function(item) {
-            item.disabled = !enable;
-        });
+    function addChatMessage(name, message) {
+        var item = document.createElement("li");
+        item.innerHTML = "<strong>" + name + "</strong> " + message;
+
+        messages.appendChild(item);
     }
 
+    /*
+     * Exposed functions
+     * */
     return {
+        /*
+         * Initialisation function
+         * */
         init: function() {
             send = document.querySelector("#send-chat");
-            message = document.querySelector("#chat-message");
+            messageField = document.querySelector("#chat-message");
+            messages = document.querySelector("#chat-messages ul");
 
             //our realtime database reference
             ref = firebase.database().ref("/chat");
 
             send.addEventListener("click", sendChatMessage);
+
+            ref.limitToLast(20).once("value", function(snapshot) {
+                snapshot.forEach(function(data) {
+                    //get initial chat data
+                    var message = data.val();
+                    addChatMessage(message.name, message.message);
+                });
+
+                //once loaded initial set, let's grab up to date chat messages.
+                ref.on("child_added", function(snapshot) {
+                    var message = snapshot.val();
+                    addChatMessage(message.name, message.message);
+                });
+            });
+
+
         },
 
+        /*
+         * Call when the user has logged in
+         * */
         onlogin: function() {
             enableChat(true);
         }

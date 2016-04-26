@@ -19,6 +19,11 @@
   resize: none;
 }
 
+#chat-messages ul {
+  list-style: none;
+  padding-left: 10px;
+}
+
 #chat-messages {
   overflow-y: auto;
 }
