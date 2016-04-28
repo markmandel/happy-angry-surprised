@@ -1,4 +1,3 @@
 .*
 !.gitignore
 *.iml
-firebase.json
