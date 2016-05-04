@@ -43,12 +43,10 @@ var Session = (function() {
                 googleProvider = true;
             }
 
-            console.log("I am here?");
             closeLoginDialog();
             document.querySelector("#login").style.display = "none";
             document.querySelector("#logout").style.display = "block";
-
-            console.log("Do I get here?");
+            
             Chat.onlogin();
         } else { //signout
             if (googleProvider) {

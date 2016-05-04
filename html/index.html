@@ -32,11 +32,13 @@
 
     <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.0.0-eap.3/firebase.js"></script>
+    <script src="http://webrtc.github.io/adapter/adapter-1.1.0.js"></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script defer src="js/layout.js"></script>
     <script defer src="js/forms.js"></script>
     <script defer src="js/session.js"></script>
     <script defer src="js/chat.js"></script>
+    <script defer src="js/cam.js"></script>
     <script defer src="js/script.js"></script>
 </head>
 <body>
@@ -112,7 +114,7 @@
         <div class="mdl-grid">
             <div id="game" class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
                 <div class="mdl-card">
-                    Game will play here
+                    <video id="cam" autoplay></video>
                 </div>
             </div>
             <div id="chat" class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--4-col mdl-card">

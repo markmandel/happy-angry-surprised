@@ -31,3 +31,9 @@
 #send-chat {
   float: right;
 }
+
+/* game styling */
+#cam {
+  background: darkgray;
+  width: 100%;
+}
