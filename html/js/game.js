@@ -14,6 +14,51 @@
  *  limitations under the License.
  */
 
+"use strict";
+
 /**
  * Module for joining and playing happy, angry, surprised.
  */
+
+var Game = (function(){
+
+    var create;
+    var ref;
+    var STATE = {OPEN: 3, PLAYING: 2, FINISHED: 1};
+
+    function createGame() {
+        console.log("creating a game!");
+        enableCreateGame(false);
+        var user = firebase.auth().currentUser;
+        ref.push().set({
+            creatorUID: user.uid,
+            creatorDisplayName: user.displayName,
+            state: STATE.OPEN
+        }, function(error) {
+            if (error) {
+                console.log("Uh oh, error creating game.", error);
+                document.querySelector("#snackbar").MaterialSnackbar.showSnackbar({message: "Error creating game"});
+            } else {
+                //disable access to joining other games
+                console.log("I created a game!");
+            }
+        })
+    }
+
+    function enableCreateGame(enabled) {
+        create.disabled = !enabled;
+    }
+
+    return {
+        init: function() {
+            create = document.querySelector("#create-game");
+            create.addEventListener("click", createGame);
+
+            ref = firebase.database().ref("/games");
+        },
+
+        onlogin: function() {
+            enableCreateGame(true);
+        }
+    };
+})();

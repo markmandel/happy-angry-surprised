@@ -46,8 +46,9 @@ var Session = (function() {
             closeLoginDialog();
             document.querySelector("#login").style.display = "none";
             document.querySelector("#logout").style.display = "block";
-            
+
             Chat.onlogin();
+            Game.onlogin();
         } else { //signout
             if (googleProvider) {
                 gapi.auth2.getAuthInstance().signOut().then(function() {
