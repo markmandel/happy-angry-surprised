@@ -47,11 +47,6 @@
         <div class="mdl-layout__header-row">
             <span class="mdl-layout-title">Cloud Vision Rock Paper Scissors</span>
             <div class="mdl-layout-spacer"></div>
-
-            <button id="join-game" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-                Join Game
-            </button>
-            &nbsp;
             <button id="logout" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                 Logout
             </button>
@@ -112,14 +107,29 @@
     </header>
     <main class="mdl-layout__content mdl-color--grey-100">
         <div class="mdl-grid">
-            <div id="game" class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+            <div id="game" class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--6-col">
                 <div class="mdl-card">
                     <video id="cam" autoplay></video>
                 </div>
             </div>
-            <div id="chat" class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--4-col mdl-card">
+            <div id="games" class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--3-col mdl-card">
+                <div id="games-header" class="mdl-card__title">
+                    <h2 class="mdl-card__title-text">Open Games</h2>
+                </div>
+                <div class="mdl-card__actions mdl-card--border" style="text-align: right;">
+                    <button id="create-game" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                        Create Game
+                    </button>
+                </div>
+                <div id="games-list" class="mdl-card__actions mdl-card--border">
+                    <ul>
+                        <li></li>
+                    </ul>
+                </div>
+            </div>
+            <div id="chat" class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--3-col mdl-card">
                 <div id="chat-header" class="mdl-card__title">
-                    Group Chat
+                    <h2 class="mdl-card__title-text">Group Chat</h2>
                 </div>
                 <div id="chat-messages" class="mdl-card__actions mdl-card--border">
                     <ul>
