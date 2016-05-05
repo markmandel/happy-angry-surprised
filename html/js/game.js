@@ -29,6 +29,7 @@ var Game = (function() {
     //ui elements
     var create;
     var gameList;
+    var cam;
 
     /*
      * enable the ability to create a game
@@ -38,7 +39,7 @@ var Game = (function() {
     }
 
     /*
-     * Add the jopin game button to the list
+     * Add the join game button to the list
      * */
     function addJoinGameButton(key, game) {
         var item = document.createElement("li");
@@ -113,9 +114,26 @@ var Game = (function() {
     }
 
     /*
-    * Show the UI for taking a picture, counts down
-    * and takes a photo!
-    * */
+     * Take a picture, and upload it to file storage
+     * */
+    function takePicture() {
+        var canvas = document.createElement("canvas");
+        canvas.width = 640;
+        canvas.height = 480;
+        var context = canvas.getContext("2d");
+        context.drawImage(cam, 0, 0, canvas.width, canvas.height);
+
+        var data = canvas.toDataURL("image/png");
+        var png = data.split(',')[1]; //we just want the base64 data.
+        var blob = new Blob([window.atob(png)], {type: 'image/png', encoding: 'utf-8'});
+
+        console.log("BLOB!", blob);
+    }
+
+    /*
+     * Show the UI for taking a picture, counts down
+     * and takes a photo!
+     * */
     function countDownToTakingPicture() {
         var dialog = document.querySelector("#game-cam");
         var title = dialog.querySelector(".mdl-dialog__title");
@@ -131,7 +149,8 @@ var Game = (function() {
                 } else {
                     console.log("Taking picture!");
                     title.innerText = "CHEESE!";
-                    document.querySelector("#cam").pause();
+                    cam.pause();
+                    takePicture();
                     document.querySelector("#cam-progress").style.display = "block";
                 }
             };
@@ -150,7 +169,8 @@ var Game = (function() {
             console.log("Game update:", game);
 
             switch (game.state) {
-                case STATE.JOINED: {
+                case STATE.JOINED:
+                {
                     if (game.creatorUID == firebase.auth().currentUser.uid) {
                         UI.snackbar({message: game.joinerDisplayName + " has joined your game."});
                         //wait a little bit
@@ -162,7 +182,8 @@ var Game = (function() {
                     break;
                 }
 
-                case STATE.PICTURE: {
+                case STATE.PICTURE:
+                {
                     countDownToTakingPicture();
                     break;
                 }
@@ -179,6 +200,7 @@ var Game = (function() {
             create.addEventListener("click", createGame);
 
             gameList = document.querySelector("#games ul");
+            cam = document.querySelector("#cam");
 
             ref = firebase.database().ref("/games");
 
