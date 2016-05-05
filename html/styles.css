@@ -39,6 +39,10 @@
 }
 
 /* game window styling */
+.cam-wrapper {
+  padding: 10px;
+}
+
 #cam {
   background: darkgray;
   width: 100%;
