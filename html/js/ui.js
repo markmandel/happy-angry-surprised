@@ -17,12 +17,15 @@
 "use strict";
 
 /*
- * Deals with layout
+ * Deals with layout and UI
  */
-var Layout = (function() {
+var UI = (function() {
 
     //public functions
     return {
+        /*
+        * Fill layout vertically in the browser
+        * */
         fillVertically: function() {
             //fill vertically
             var header = document.querySelector("header");
@@ -35,6 +38,13 @@ var Layout = (function() {
             var input = document.querySelector("#chat-input");
 
             messages.style.height = (chat.clientHeight - (header.clientHeight + input.clientHeight)) + "px";
+        },
+
+        /*
+        * Simple way to show a snackbar at the bottom of the page
+        * */
+        snackbar: function(data) {
+            document.querySelector("#snackbar").MaterialSnackbar.showSnackbar(data);
         }
     }
 })();

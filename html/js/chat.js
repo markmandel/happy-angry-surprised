@@ -46,7 +46,7 @@ var Chat = (function() {
         }, function(error) {
             if (error) {
                 console.log("Uh oh, error saving data.", error);
-                document.querySelector("#snackbar").MaterialSnackbar.showSnackbar({message: "Error sending message"});
+                UI.snackbar({message: "Error sending message"});
             } else {
                 messageField.value = "";
                 messageField.parentElement.classList.remove("is-dirty");

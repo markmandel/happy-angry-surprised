@@ -77,7 +77,7 @@ var Session = (function() {
             })
         } else {
             var data = {message: "All fields required"};
-            document.querySelector("#snackbar").MaterialSnackbar.showSnackbar(data);
+            UI.snackbar(data);
         }
     }
 
@@ -140,7 +140,7 @@ var Session = (function() {
             });
         } else {
             var data = {message: "All fields required"};
-            document.querySelector("#snackbar").MaterialSnackbar.showSnackbar(data);
+            UI.snackbar(data);
         }
     }
 

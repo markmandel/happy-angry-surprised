@@ -31,6 +31,29 @@ var Game = (function() {
     var gameList;
 
     /*
+     * enable the ability to create a game
+     * */
+    function enableCreateGame(enabled) {
+        create.disabled = !enabled;
+    }
+
+    /*
+     * Add the jopin game button to the list
+     * */
+    function addJoinGameButton(key, game) {
+        var item = document.createElement("li");
+        item.id = key;
+        item.innerHTML = '<button id="create-game" ' +
+                'class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">' +
+                'Join ' + game.creatorDisplayName + '</button>';
+        item.addEventListener("click", function() {
+            joinGame(key);
+        });
+
+        gameList.appendChild(item);
+    }
+
+    /*
      * Create a game in Firebase
      * */
     function createGame() {
@@ -48,7 +71,7 @@ var Game = (function() {
         key.set(currentGame, function(error) {
             if (error) {
                 console.log("Uh oh, error creating game.", error);
-                document.querySelector("#snackbar").MaterialSnackbar.showSnackbar({message: "Error creating game"});
+                UI.snackbar({message: "Error creating game"});
             } else {
                 //disable access to joining other games
                 console.log("I created a game!", key);
@@ -75,7 +98,7 @@ var Game = (function() {
                 watchGame(key);
             } else {
                 console.log("Could not commit when trying to join game", error);
-                document.querySelector("#snackbar").MaterialSnackbar.showSnackbar({message: "Error joining game"});
+                UI.snackbar({message: "Error joining game"});
             }
         });
     }
@@ -90,32 +113,14 @@ var Game = (function() {
             console.log("Game update:", game);
 
             switch (game.state) {
-                //TODO: implement
+                case STATE.JOINED: {
+                    if (game.creatorUID == firebase.auth().currentUser.uid) {
+                        UI.snackbar({message: game.joinerDisplayname + " has joined your game."});
+                    }
+                    break;
+                }
             }
         })
-    }
-
-    /*
-     * enable the ability to create a game
-     * */
-    function enableCreateGame(enabled) {
-        create.disabled = !enabled;
-    }
-
-    /*
-     * Add the jopin game button to the list
-     * */
-    function addJoinGameButton(key, game) {
-        var item = document.createElement("li");
-        item.id = key;
-        item.innerHTML = '<button id="create-game" ' +
-                'class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">' +
-                'Join ' + game.creatorDisplayName + '</button>';
-        item.addEventListener("click", function() {
-            joinGame(key);
-        });
-
-        gameList.appendChild(item);
     }
 
     return {

@@ -36,7 +36,7 @@ var Cam = (function() {
                     })
                     .catch(function(error) {
                         console.log("Could not connect to camera: ", error);
-                        document.querySelector("#snackbar").MaterialSnackbar.showSnackbar({message: "Error connecting to camera"});
+                        UI.snackbar({message: "Error connecting to camera"});
                     });
         }
     }
