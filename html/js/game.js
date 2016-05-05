@@ -104,11 +104,40 @@ var Game = (function() {
     }
 
     /*
+    * Show the UI for taking a picture, counts down
+    * and takes a photo!
+    * */
+    function countDownToTakingPicture() {
+        var dialog = document.querySelector("#game-cam");
+        var title = dialog.querySelector(".mdl-dialog__title");
+        dialog.showModal();
+        window.setTimeout(function() {
+            title.innerText = 5;
+            var f = function() {
+                var count = parseInt(title.innerText);
+                if (count > 0) {
+                    count--;
+                    title.innerText = count;
+                } else {
+                    console.log("Taking picture!");
+                    document.querySelector("#cam").pause();
+                    document.querySelector("#cam-progress").style.display = "block";
+                }
+                setTimeout(f, 1000);
+            };
+            setTimeout(f, 1000);
+        }, 2000);
+
+
+    }
+
+    /*
      * Watch the current game, and depending on state
      * changes, perform actions.
      * */
     function watchGame(key) {
-        ref.child(key).on("value", function(snapshot) {
+        var gameRef = ref.child(key);
+        gameRef.on("value", function(snapshot) {
             var game = snapshot.val();
             console.log("Game update:", game);
 
@@ -116,7 +145,17 @@ var Game = (function() {
                 case STATE.JOINED: {
                     if (game.creatorUID == firebase.auth().currentUser.uid) {
                         UI.snackbar({message: game.joinerDisplayname + " has joined your game."});
+                        //wait a little bit
+                        window.setTimeout(function() {
+                            game.state = STATE.PICTURE;
+                            gameRef.set(game);
+                        }, 1000);
                     }
+                    break;
+                }
+
+                case STATE.PICTURE: {
+                    countDownToTakingPicture();
                     break;
                 }
             }

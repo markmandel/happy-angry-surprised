@@ -38,12 +38,18 @@
   padding-left: 10px;
 }
 
-/* game window styling */
-.cam-wrapper {
-  padding: 10px;
+#game-cam {
+  width: 680px;
 }
 
 #cam {
   background: darkgray;
-  width: 100%;
+  width: 640px;
+  height: 480px;
+  margin: 0 auto;
+}
+
+#cam-progress {
+  width: 644px;
+  display: none;
 }

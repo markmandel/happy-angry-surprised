@@ -18,7 +18,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Cloud Vision Rock Paper Scissors</title>
+    <title>HAPPY 😃 SAD 😢 SURPRISED 😯</title>
 
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
@@ -47,7 +47,7 @@
 <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
     <header class="mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
         <div class="mdl-layout__header-row">
-            <span class="mdl-layout-title">Cloud Vision Rock Paper Scissors</span>
+            <span class="mdl-layout-title">HAPPY 😃 SAD 😢 SURPRISED 😯</span>
             <div class="mdl-layout-spacer"></div>
             <button id="logout"
                     class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
@@ -115,9 +115,13 @@
     <main class="mdl-layout__content mdl-color--grey-100">
         <div class="mdl-grid">
             <div id="game" class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--6-col">
-                <div class="cam-wrapper">
-                    <video id="cam" autoplay></video>
-                </div>
+                <dialog id="game-cam" class="mdl-dialog">
+                    <h3 class="mdl-dialog__title">Are you ready?</h3>
+                    <div class="mdl-dialog__content">
+                        <video id="cam" autoplay></video>
+                        <div id="cam-progress" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+                    </div>
+                </dialog>
             </div>
             <div id="games" class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--3-col mdl-card">
                 <div id="games-header" class="mdl-card__title">
