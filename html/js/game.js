@@ -22,10 +22,12 @@
 
 var Game = (function() {
 
-    var create;
     var ref;
     //set of states a game can be in.
     var STATE = {OPEN: 1, JOINED: 2, PICTURE: 3, RESULT: 4, CREATOR_WON: 5, CREATOR_LOST: 6, DRAW: 7};
+
+    //ui elements
+    var create;
     var gameList;
 
     /*
@@ -53,6 +55,7 @@ var Game = (function() {
                 //drop this game, if I disconnect
                 key.onDisconnect().remove();
                 gameList.style.display = "none";
+                watchGame(key.key);
             }
         })
     }
@@ -69,11 +72,27 @@ var Game = (function() {
         }, function(error, committed, snapshot) {
             if (committed) {
                 enableCreateGame(false);
+                watchGame(key);
             } else {
                 console.log("Could not commit when trying to join game", error);
                 document.querySelector("#snackbar").MaterialSnackbar.showSnackbar({message: "Error joining game"});
             }
         });
+    }
+
+    /*
+     * Watch the current game, and depending on state
+     * changes, perform actions.
+     * */
+    function watchGame(key) {
+        ref.child(key).on("value", function(snapshot) {
+            var game = snapshot.val();
+            console.log("Game update:", game);
+
+            switch (game.state) {
+                //TODO: implement
+            }
+        })
     }
 
     /*
