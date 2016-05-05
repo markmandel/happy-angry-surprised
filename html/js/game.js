@@ -88,14 +88,23 @@ var Game = (function() {
      * */
     function joinGame(key) {
         console.log("Attempting to join game: ", key);
+        var currentUser = firebase.auth().currentUser;
         ref.child(key).transaction(function(currentValue) {
-            currentValue.state = 2;
-            currentValue.joinerDisplayname = firebase.auth().currentUser.displayName;
+            //only join if someone else hasn't
+            if (!currentValue.joinerUID) {
+                currentValue.state = 2;
+                currentValue.joinerUID = currentUser.uid;
+                currentValue.joinerDisplayName = currentUser.displayName;
+            }
             return currentValue;
         }, function(error, committed, snapshot) {
             if (committed) {
-                enableCreateGame(false);
-                watchGame(key);
+                if (snapshot.val().joinerUID == currentUser.uid) {
+                    enableCreateGame(false);
+                    watchGame(key);
+                } else {
+                    UI.snackbar({message: "Game already joined. Please choose another."});
+                }
             } else {
                 console.log("Could not commit when trying to join game", error);
                 UI.snackbar({message: "Error joining game"});
@@ -115,20 +124,19 @@ var Game = (function() {
             title.innerText = 5;
             var f = function() {
                 var count = parseInt(title.innerText);
-                if (count > 0) {
+                if (count > 1) {
                     count--;
                     title.innerText = count;
+                    setTimeout(f, 1000);
                 } else {
                     console.log("Taking picture!");
+                    title.innerText = "CHEESE!";
                     document.querySelector("#cam").pause();
                     document.querySelector("#cam-progress").style.display = "block";
                 }
-                setTimeout(f, 1000);
             };
             setTimeout(f, 1000);
         }, 2000);
-
-
     }
 
     /*
@@ -144,7 +152,7 @@ var Game = (function() {
             switch (game.state) {
                 case STATE.JOINED: {
                     if (game.creatorUID == firebase.auth().currentUser.uid) {
-                        UI.snackbar({message: game.joinerDisplayname + " has joined your game."});
+                        UI.snackbar({message: game.joinerDisplayName + " has joined your game."});
                         //wait a little bit
                         window.setTimeout(function() {
                             game.state = STATE.PICTURE;
