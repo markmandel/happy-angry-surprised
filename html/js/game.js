@@ -24,13 +24,19 @@ var Game = (function(){
 
     var create;
     var ref;
-    var STATE = {OPEN: 3, PLAYING: 2, FINISHED: 1};
+    //set of states a game can be in.
+    var STATE = {OPEN: 1, PLAYING: 2, FINISHED: 3};
+    var gameList;
 
+    /*
+    * Create a game in firebase
+    * */
     function createGame() {
         console.log("creating a game!");
         enableCreateGame(false);
         var user = firebase.auth().currentUser;
-        ref.push().set({
+        var key = ref.push();
+        key.set({
             creatorUID: user.uid,
             creatorDisplayName: user.displayName,
             state: STATE.OPEN
@@ -40,23 +46,73 @@ var Game = (function(){
                 document.querySelector("#snackbar").MaterialSnackbar.showSnackbar({message: "Error creating game"});
             } else {
                 //disable access to joining other games
-                console.log("I created a game!");
+                console.log("I created a game!", key);
+                //drop this game, if I disconnect
+                key.onDisconnect().remove();
             }
         })
     }
 
+    /*
+    * enable the ability to create a game
+    * */
     function enableCreateGame(enabled) {
         create.disabled = !enabled;
     }
 
+    /*
+    * Add the jopin game button to the list
+    * */
+    function addJoinGameButton(key, game) {
+        var item = document.createElement("li");
+        item.id = key;
+        item.innerHTML = '<button id="create-game" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Join '+ game.creatorDisplayName  +'</button>';
+        item.addEventListener("click", function() {
+           joinGame(key);
+        });
+
+        gameList.appendChild(item);
+    }
+
+    function joinGame(key) {
+        console.log("Attempting to join game: ", key);
+        ref.child(key).transaction(function(currentValue) {
+            currentValue.state = 2;
+            return currentValue;
+        });
+    }
+
     return {
+        /*
+        * Initialisation function
+        * */
         init: function() {
             create = document.querySelector("#create-game");
             create.addEventListener("click", createGame);
 
+            gameList = document.querySelector("#games ul");
+
             ref = firebase.database().ref("/games");
+
+            var openGames = ref.orderByChild("state").equalTo(STATE.OPEN);
+            openGames.on("child_added", function(snapshot) {
+                console.log("games:", snapshot);
+                var data = snapshot.val();
+
+                //ignore our own games
+                if (data.creatorUID != firebase.auth().currentUser.uid) {
+                    addJoinGameButton(snapshot.key, data);
+                }
+            });
+
+            openGames.on("child_removed", function(snapshot) {
+                document.querySelector("#" + snapshot.key).remove();
+            })
         },
 
+        /*
+        * Event handler once we have logged in
+        * */
         onlogin: function() {
             enableCreateGame(true);
         }

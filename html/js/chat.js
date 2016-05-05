@@ -98,8 +98,6 @@ var Chat = (function() {
                     addChatMessage(message.name, message.message);
                 });
             });
-
-
         },
 
         /*

@@ -27,7 +27,8 @@
     <link rel="stylesheet" href="styles.css">
 
     <meta name="google-signin-scope" content="profile email">
-    <meta name="google-signin-client_id" content="425564002590-si32gopjjvfqo5ogtq359gp6328hsehe.apps.googleusercontent.com">
+    <meta name="google-signin-client_id"
+          content="425564002590-si32gopjjvfqo5ogtq359gp6328hsehe.apps.googleusercontent.com">
     <meta name="google-signin-cookiepolicy" content="single_host_origin">
 
     <script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>
@@ -48,10 +49,12 @@
         <div class="mdl-layout__header-row">
             <span class="mdl-layout-title">Cloud Vision Rock Paper Scissors</span>
             <div class="mdl-layout-spacer"></div>
-            <button id="logout" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+            <button id="logout"
+                    class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                 Logout
             </button>
-            <button id="login" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+            <button id="login"
+                    class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                 Login
             </button>
             <dialog id="login-dialog" class="mdl-dialog">
@@ -66,10 +69,12 @@
                             <input class="mdl-textfield__input" type="password" id="password">
                             <label class="mdl-textfield__label" for="password">Password</label>
                         </div>
-                        <button id="sign-in" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                        <button id="sign-in"
+                                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                             Login
                         </button>
-                        <button id="create-account" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                        <button id="create-account"
+                                class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                             Create Account
                         </button>
                     </form>
@@ -99,7 +104,8 @@
                     </form>
                 </div>
                 <div class="mdl-dialog__actions">
-                    <button id="entry-submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                    <button id="entry-submit"
+                            class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                         Create
                     </button>
                 </div>
@@ -118,14 +124,13 @@
                     <h2 class="mdl-card__title-text">Open Games</h2>
                 </div>
                 <div class="mdl-card__actions mdl-card--border" style="text-align: right;">
-                    <button id="create-game" disabled class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                    <button id="create-game" disabled
+                            class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                         Create Game
                     </button>
                 </div>
                 <div id="games-list" class="mdl-card__actions mdl-card--border">
-                    <ul>
-                        <li></li>
-                    </ul>
+                    <ul></ul>
                 </div>
             </div>
             <div id="chat" class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--3-col mdl-card">
@@ -138,10 +143,11 @@
                 </div>
                 <div id="chat-input" class="mdl-card__actions mdl-card--border">
                     <div class="mdl-textfield mdl-js-textfield">
-                        <textarea disabled class="mdl-textfield__input" rows= "2" id="chat-message"></textarea>
+                        <textarea disabled class="mdl-textfield__input" rows="2" id="chat-message"></textarea>
                         <label class="mdl-textfield__label" for="chat-message">Chat message...</label>
                     </div>
-                    <button disabled id="send-chat" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                    <button disabled id="send-chat"
+                            class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                         Send
                     </button>
                 </div>

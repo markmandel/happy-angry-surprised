@@ -32,7 +32,13 @@
   float: right;
 }
 
-/* game styling */
+/* game list styling */
+#games ul {
+  list-style: none;
+  padding-left: 10px;
+}
+
+/* game window styling */
 #cam {
   background: darkgray;
   width: 100%;
