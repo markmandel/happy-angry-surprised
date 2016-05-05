@@ -27,6 +27,8 @@ var Game = (function(){
     //set of states a game can be in.
     var STATE = {OPEN: 1, PLAYING: 2, FINISHED: 3};
     var gameList;
+    //what game am I currently in?
+    var currentGame;
 
     /*
     * Create a game in firebase
@@ -34,13 +36,16 @@ var Game = (function(){
     function createGame() {
         console.log("creating a game!");
         enableCreateGame(false);
+
         var user = firebase.auth().currentUser;
-        var key = ref.push();
-        key.set({
+        currentGame = {
             creatorUID: user.uid,
             creatorDisplayName: user.displayName,
             state: STATE.OPEN
-        }, function(error) {
+        };
+
+        var key = ref.push();
+        key.set(currentGame, function(error) {
             if (error) {
                 console.log("Uh oh, error creating game.", error);
                 document.querySelector("#snackbar").MaterialSnackbar.showSnackbar({message: "Error creating game"});
@@ -49,6 +54,7 @@ var Game = (function(){
                 console.log("I created a game!", key);
                 //drop this game, if I disconnect
                 key.onDisconnect().remove();
+                gameList.style.display = "none";
             }
         })
     }
@@ -78,7 +84,16 @@ var Game = (function(){
         console.log("Attempting to join game: ", key);
         ref.child(key).transaction(function(currentValue) {
             currentValue.state = 2;
+            currentValue.joinerDisplayname = firebase.auth().currentUser.displayName;
             return currentValue;
+        }, function(error, committed, snapshot){
+            if(committed) {
+                currentGame = snapshot.val();
+                enableCreateGame(false);
+            } else {
+                console.log("Could not commit when trying to join game", error);
+                document.querySelector("#snackbar").MaterialSnackbar.showSnackbar({message: "Error joining game"});
+            }
         });
     }
 
