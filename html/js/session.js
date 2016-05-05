@@ -181,7 +181,7 @@ var Session = (function() {
          * Google sign in
          * */
         googleSignin: function(googleUser) {
-            console.log("Google Signin", googleUser.getAuthResponse().id_token);
+            console.log("Google Signin");
             var credential = firebase.auth.GoogleAuthProvider.credential({
                 'idToken': googleUser.getAuthResponse().id_token
             });

@@ -116,25 +116,33 @@ var Game = (function() {
     /*
      * Take a picture, and upload it to file storage
      * */
-    function takePicture() {
+    function takePicture(key) {
         var canvas = document.createElement("canvas");
-        canvas.width = 640;
-        canvas.height = 480;
+        canvas.width = 640 / 2;
+        canvas.height = 480 / 2;
         var context = canvas.getContext("2d");
         context.drawImage(cam, 0, 0, canvas.width, canvas.height);
 
-        var data = canvas.toDataURL("image/png");
-        var png = data.split(',')[1]; //we just want the base64 data.
-        var blob = new Blob([window.atob(png)], {type: 'image/png', encoding: 'utf-8'});
+        var picRef = firebase.storage().ref().child("games/" + key + "/" + firebase.auth().currentUser.uid + ".png");
 
-        console.log("BLOB!", blob);
+        canvas.toBlob(function(blob) {
+            picRef.put(blob).on("state_changed",
+                    function(snapshot) {
+                    },
+                    function(error) {
+                        console.log("Error uploading image:", error);
+                        UI.snackbar("Error uploading photo.");
+                    }, function() {
+                        console.log("Image has been uploaded!");
+                    });
+        });
     }
 
     /*
      * Show the UI for taking a picture, counts down
      * and takes a photo!
      * */
-    function countDownToTakingPicture() {
+    function countDownToTakingPicture(key) {
         var dialog = document.querySelector("#game-cam");
         var title = dialog.querySelector(".mdl-dialog__title");
         dialog.showModal();
@@ -150,7 +158,7 @@ var Game = (function() {
                     console.log("Taking picture!");
                     title.innerText = "CHEESE!";
                     cam.pause();
-                    takePicture();
+                    takePicture(key);
                     document.querySelector("#cam-progress").style.display = "block";
                 }
             };
@@ -168,6 +176,11 @@ var Game = (function() {
             var game = snapshot.val();
             console.log("Game update:", game);
 
+            //if we get a null value, because remove - ignore it.
+            if(!game) {
+                return
+            }
+
             switch (game.state) {
                 case STATE.JOINED:
                 {
@@ -184,7 +197,7 @@ var Game = (function() {
 
                 case STATE.PICTURE:
                 {
-                    countDownToTakingPicture();
+                    countDownToTakingPicture(key);
                     break;
                 }
             }
