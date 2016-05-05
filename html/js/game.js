@@ -20,25 +20,23 @@
  * Module for joining and playing happy, angry, surprised.
  */
 
-var Game = (function(){
+var Game = (function() {
 
     var create;
     var ref;
     //set of states a game can be in.
-    var STATE = {OPEN: 1, PLAYING: 2, FINISHED: 3};
+    var STATE = {OPEN: 1, JOINED: 2, PICTURE: 3, RESULT: 4, CREATOR_WON: 5, CREATOR_LOST: 6, DRAW: 7};
     var gameList;
-    //what game am I currently in?
-    var currentGame;
 
     /*
-    * Create a game in firebase
-    * */
+     * Create a game in Firebase
+     * */
     function createGame() {
         console.log("creating a game!");
         enableCreateGame(false);
 
         var user = firebase.auth().currentUser;
-        currentGame = {
+        var currentGame = {
             creatorUID: user.uid,
             creatorDisplayName: user.displayName,
             state: STATE.OPEN
@@ -60,35 +58,16 @@ var Game = (function(){
     }
 
     /*
-    * enable the ability to create a game
-    * */
-    function enableCreateGame(enabled) {
-        create.disabled = !enabled;
-    }
-
-    /*
-    * Add the jopin game button to the list
-    * */
-    function addJoinGameButton(key, game) {
-        var item = document.createElement("li");
-        item.id = key;
-        item.innerHTML = '<button id="create-game" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Join '+ game.creatorDisplayName  +'</button>';
-        item.addEventListener("click", function() {
-           joinGame(key);
-        });
-
-        gameList.appendChild(item);
-    }
-
+     * Join a game that a person has already opened
+     * */
     function joinGame(key) {
         console.log("Attempting to join game: ", key);
         ref.child(key).transaction(function(currentValue) {
             currentValue.state = 2;
             currentValue.joinerDisplayname = firebase.auth().currentUser.displayName;
             return currentValue;
-        }, function(error, committed, snapshot){
-            if(committed) {
-                currentGame = snapshot.val();
+        }, function(error, committed, snapshot) {
+            if (committed) {
                 enableCreateGame(false);
             } else {
                 console.log("Could not commit when trying to join game", error);
@@ -97,10 +76,33 @@ var Game = (function(){
         });
     }
 
+    /*
+     * enable the ability to create a game
+     * */
+    function enableCreateGame(enabled) {
+        create.disabled = !enabled;
+    }
+
+    /*
+     * Add the jopin game button to the list
+     * */
+    function addJoinGameButton(key, game) {
+        var item = document.createElement("li");
+        item.id = key;
+        item.innerHTML = '<button id="create-game" ' +
+                'class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">' +
+                'Join ' + game.creatorDisplayName + '</button>';
+        item.addEventListener("click", function() {
+            joinGame(key);
+        });
+
+        gameList.appendChild(item);
+    }
+
     return {
         /*
-        * Initialisation function
-        * */
+         * Initialisation function
+         * */
         init: function() {
             create = document.querySelector("#create-game");
             create.addEventListener("click", createGame);
@@ -121,13 +123,16 @@ var Game = (function(){
             });
 
             openGames.on("child_removed", function(snapshot) {
-                document.querySelector("#" + snapshot.key).remove();
+                var item = document.querySelector("#" + snapshot.key);
+                if (item) {
+                    item.remove();
+                }
             })
         },
 
         /*
-        * Event handler once we have logged in
-        * */
+         * Event handler once we have logged in
+         * */
         onlogin: function() {
             enableCreateGame(true);
         }
