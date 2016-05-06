@@ -137,6 +137,24 @@ var Game = (function() {
         gameRef.update(data);
     }
 
+
+    /*
+    * Take the image and save it to GCS
+    * */
+    function saveImage(imageRef, blob, successCallback) {
+        var uploadTask = imageRef.put(blob);
+        uploadTask.on("state_changed",
+                function(snapshot) {
+                },
+                function(error) {
+                    console.log("Error uploading image:", error);
+                    UI.snackbar("Error uploading photo.");
+                }, function() {
+                    console.log("Image has been uploaded!", uploadTask.snapshot);
+                    successCallback(uploadTask);
+                });
+    }
+
     /*
      * Take a picture, and upload it to file storage
      * */
@@ -147,26 +165,17 @@ var Game = (function() {
         var context = canvas.getContext("2d");
         context.drawImage(cam, 0, 0, canvas.width, canvas.height);
 
-        var picRef = firebase.storage().ref().child("games/" + key + "/" + firebase.auth().currentUser.uid + ".png");
+        var imageRef = firebase.storage().ref().child("games/" + key + "/" + firebase.auth().currentUser.uid + ".png");
 
         canvas.toBlob(function(blob) {
-            var uploadTask = picRef.put(blob);
-            uploadTask.on("state_changed",
-                    function(snapshot) {
-                    },
-                    function(error) {
-                        console.log("Error uploading image:", error);
-                        UI.snackbar("Error uploading photo.");
-                    }, function() {
-                        console.log("Image has been uploaded!", uploadTask.snapshot);
-                        dialog.close();
-                        //no reason to re-download this from GCS. Just set it locally.
-                        document.querySelector("#my-image").setAttribute("src", canvas.toDataURL("image/png"));
-
-                        var uploadRef = uploadTask.snapshot.ref;
-                        var gcsPath = "gs://" + uploadRef.bucket + "/" + uploadRef.fullPath;
-                        addImageToGame(key, game, gcsPath, uploadTask.snapshot.downloadURL);
-                    });
+            saveImage(imageRef, blob, function(uploadTask) {
+                dialog.close();
+                //no reason to re-download this from GCS. Just set it locally.
+                document.querySelector("#my-image").setAttribute("src", canvas.toDataURL("image/png"));
+                var uploadRef = uploadTask.snapshot.ref;
+                var gcsPath = "gs://" + uploadRef.bucket + "/" + uploadRef.fullPath;
+                addImageToGame(key, game, gcsPath, uploadTask.snapshot.downloadURL);
+            })
         });
     }
 
@@ -224,6 +233,8 @@ var Game = (function() {
 
             //if we get a null value, because remove - ignore it.
             if (!game) {
+                UI.snackbar("Game has been closed. Please play again.");
+                enableCreateGame(true);
                 return
             }
 
