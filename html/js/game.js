@@ -24,7 +24,7 @@ var Game = (function() {
 
     var ref;
     //set of states a game can be in.
-    var STATE = {OPEN: 1, JOINED: 2, TAKE_PICTURE: 3, UPLOADED_PICTURE: 4};
+    var STATE = {OPEN: 1, JOINED: 2, TAKE_PICTURE: 3, UPLOADED_PICTURE: 4, FACE_DETECTED: 5};
 
     //ui elements
     var create;
@@ -139,8 +139,8 @@ var Game = (function() {
 
 
     /*
-    * Take the image and save it to GCS
-    * */
+     * Take the image and save it to GCS
+     * */
     function saveImage(imageRef, blob, successCallback) {
         var uploadTask = imageRef.put(blob);
         uploadTask.on("state_changed",
@@ -222,6 +222,20 @@ var Game = (function() {
     }
 
     /*
+     * Fire off the detection of my face!
+     * */
+    function detectMyFace(game) {
+        var gcsPath = game.creator.gcsPath;
+        if (game.joiner.uid == firebase.auth().currentUser.uid) {
+            gcsPath = game.joiner.gcsPath;
+        }
+
+        Vision.detectFace(gcsPath, function() {
+            console.log("detect my face worked!");
+        });
+    }
+
+    /*
      * Watch the current game, and depending on state
      * changes, perform actions.
      * */
@@ -253,8 +267,8 @@ var Game = (function() {
                     break;
                 case STATE.UPLOADED_PICTURE:
                     displayUploadedPicture(game);
+                    detectMyFace(game);
                     break;
-
             }
         })
     }
