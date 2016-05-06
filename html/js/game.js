@@ -244,6 +244,7 @@ var Game = (function() {
         }
 
         var faceData = visionResult.responses[0].faceAnnotations[0];
+        console.log("Face Data: ", faceData);
         for (var likelihood of EMOTION_SCALE) {
             for (var key in EMOTIONS) {
                 var emotion = EMOTIONS[key];
@@ -255,7 +256,7 @@ var Game = (function() {
             }
         }
 
-        return {label: "Unknown"}
+        return {label: "Unknown", likelihood: "???"}
     }
 
     /*
@@ -271,7 +272,7 @@ var Game = (function() {
             var emotion = getVisionEmotion(result);
 
             console.log("Emotion Found: ", emotion);
-            //TODO: Display Emotion on screen
+            document.querySelector("#my-image-emotion h3").innerText = emotion.label + " ("+ emotion.likelihood +")";
             //TODO: Save Emotion
         });
     }
