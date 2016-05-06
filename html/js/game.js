@@ -24,7 +24,7 @@ var Game = (function() {
 
     var ref;
     //set of states a game can be in.
-    var STATE = {OPEN: 1, JOINED: 2, TAKE_PICTURE: 3};
+    var STATE = {OPEN: 1, JOINED: 2, TAKE_PICTURE: 3, UPLOADED_PICTURE: 4};
 
     //ui elements
     var create;
@@ -122,15 +122,25 @@ var Game = (function() {
      * Adds an image to a game, in the appropriate place
      * and updates the game state
      * */
-    function addImageToGame(key, gsPath, downloadURL) {
+    function addImageToGame(key, game, gsPath, downloadURL) {
+        var gameRef = ref.child(key);
+        var data = {state: STATE.UPLOADED_PICTURE};
 
+        if (game.creator.uid == firebase.auth().currentUser.uid) {
+            data["creator/gsPath"] = gsPath;
+            data["creator/downloadURL"] = downloadURL;
+        } else {
+            data["joiner/gsPath"] = gsPath;
+            data["joiner/downloadURL"] = downloadURL;
+        }
 
+        gameRef.update(data);
     }
 
     /*
      * Take a picture, and upload it to file storage
      * */
-    function takePicture(key) {
+    function takePicture(key, game) {
         var canvas = document.createElement("canvas");
         canvas.width = 640;
         canvas.height = 480;
@@ -153,7 +163,7 @@ var Game = (function() {
                         //no reason to re-download this from GCS. Just set it locally.
                         document.querySelector("#my-image").setAttribute("src", canvas.toDataURL("image/png"));
 
-                        addImageToGame(key, uploadTask.snapshot.ref.fullPath, uploadTask.snapshot.downloadURL);
+                        addImageToGame(key, game, uploadTask.snapshot.ref.fullPath, uploadTask.snapshot.downloadURL);
                     });
         });
     }
@@ -162,7 +172,7 @@ var Game = (function() {
      * Show the UI for taking a picture, counts down
      * and takes a photo!
      * */
-    function countDownToTakingPicture(key) {
+    function countDownToTakingPicture(key, game) {
         var title = dialog.querySelector(".mdl-dialog__title");
         dialog.showModal();
         window.setTimeout(function() {
@@ -177,12 +187,26 @@ var Game = (function() {
                     console.log("Taking picture!");
                     title.innerText = "CHEESE!";
                     cam.pause();
-                    takePicture(key);
+                    takePicture(key, game);
                     document.querySelector("#cam-progress").style.display = "block";
                 }
             };
             setTimeout(f, 1000);
         }, 2000);
+    }
+
+    /*
+    * When an image has been uploaded, display it
+    * */
+    function displayUploadedPicture(game) {
+        var image = document.querySelector("#other-image");
+        var user = firebase.auth().currentUser;
+
+        if (game.creator.downloadURL && game.creator.uid != user.uid) {
+            image.src = game.creator.downloadURL;
+        } else if (game.joiner.downloadURL && game.joiner.uid != user.uid) {
+            image.src = game.joiner.downloadURL;
+        }
     }
 
     /*
@@ -202,7 +226,6 @@ var Game = (function() {
 
             switch (game.state) {
                 case STATE.JOINED:
-                {
                     if (game.creator.uid == firebase.auth().currentUser.uid) {
                         UI.snackbar({message: game.joiner.displayName + " has joined your game."});
                         //wait a little bit
@@ -211,13 +234,13 @@ var Game = (function() {
                         }, 1000);
                     }
                     break;
-                }
-
                 case STATE.TAKE_PICTURE:
-                {
-                    countDownToTakingPicture(key);
+                    countDownToTakingPicture(key, game);
                     break;
-                }
+                case STATE.UPLOADED_PICTURE:
+                    displayUploadedPicture(game);
+                    break;
+
             }
         })
     }
