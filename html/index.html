@@ -50,6 +50,9 @@
         <div class="mdl-layout__header-row">
             <span class="mdl-layout-title">HAPPY 😃 ANGRY 😠 SURPRISED 😯</span>
             <div class="mdl-layout-spacer"></div>
+            <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" onclick="document.querySelector('#help-dialog').showModal();">
+                <i class="material-icons">help</i>
+            </button>
             <button id="logout"
                     class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
                 Logout
@@ -111,15 +114,32 @@
                     </button>
                 </div>
             </dialog>
+            <dialog id="help-dialog" class="mdl-dialog">
+                <h5 class="mdl-dialog__title">Help</h5>
+                <div class="mdl-dialog__content">
+                    <p>
+                        This is the same game as Rock, Paper Scissors, except played with Happy, Angry and Surprised
+                        facial emotions.
+                    </p>
+                    <p>
+                        The rules are as follows:
+                    </p>
+                    <ul>
+                        <li><strong>Happy</strong> beats <strong>Angry</strong></li>
+                        <li><strong>Surprised</strong> beats <strong>Happy</strong></li>
+                        <li><strong>Angry</strong> beats <strong>Surprised</strong></li>
+                    </ul>
+                </div>
+            </dialog>
         </div>
     </header>
     <main class="mdl-layout__content mdl-color--grey-100">
         <div class="mdl-grid">
             <div id="game" class="mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--6-col">
                 <div class="image-wrapper">
-                    <img id="my-image" class="face" />
+                    <img id="my-image" class="face"/>
                     <div id="my-image-emotion" class="emotion"><h3></h3></div>
-                    <img id="other-image" class="face" />
+                    <img id="other-image" class="face"/>
                     <div id="other-image-emotion" class="emotion"><h3></h3></div>
                 </div>
                 <dialog id="game-cam" class="mdl-dialog">
