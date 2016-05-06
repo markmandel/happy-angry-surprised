@@ -122,15 +122,15 @@ var Game = (function() {
      * Adds an image to a game, in the appropriate place
      * and updates the game state
      * */
-    function addImageToGame(key, game, gsPath, downloadURL) {
+    function addImageToGame(key, game, gcsPath, downloadURL) {
         var gameRef = ref.child(key);
         var data = {state: STATE.UPLOADED_PICTURE};
 
         if (game.creator.uid == firebase.auth().currentUser.uid) {
-            data["creator/gsPath"] = gsPath;
+            data["creator/gcsPath"] = gcsPath;
             data["creator/downloadURL"] = downloadURL;
         } else {
-            data["joiner/gsPath"] = gsPath;
+            data["joiner/gcsPath"] = gcsPath;
             data["joiner/downloadURL"] = downloadURL;
         }
 
@@ -158,12 +158,14 @@ var Game = (function() {
                         console.log("Error uploading image:", error);
                         UI.snackbar("Error uploading photo.");
                     }, function() {
-                        console.log("Image has been uploaded!");
+                        console.log("Image has been uploaded!", uploadTask.snapshot);
                         dialog.close();
                         //no reason to re-download this from GCS. Just set it locally.
                         document.querySelector("#my-image").setAttribute("src", canvas.toDataURL("image/png"));
 
-                        addImageToGame(key, game, uploadTask.snapshot.ref.fullPath, uploadTask.snapshot.downloadURL);
+                        var uploadRef = uploadTask.snapshot.ref;
+                        var gcsPath = "gs://" + uploadRef.bucket + "/" + uploadRef.fullPath;
+                        addImageToGame(key, game, gcsPath, uploadTask.snapshot.downloadURL);
                     });
         });
     }
@@ -197,8 +199,8 @@ var Game = (function() {
     }
 
     /*
-    * When an image has been uploaded, display it
-    * */
+     * When an image has been uploaded, display it
+     * */
     function displayUploadedPicture(game) {
         var image = document.querySelector("#other-image");
         var user = firebase.auth().currentUser;
