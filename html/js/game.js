@@ -24,7 +24,7 @@ var Game = (function() {
 
     var ref;
     //set of states a game can be in.
-    var STATE = {OPEN: 1, JOINED: 2, PICTURE: 3, RESULT: 4, CREATOR_WON: 5, CREATOR_LOST: 6, DRAW: 7};
+    var STATE = {OPEN: 1, JOINED: 2, TAKE_PICTURE: 3};
 
     //ui elements
     var create;
@@ -47,7 +47,7 @@ var Game = (function() {
         item.id = key;
         item.innerHTML = '<button id="create-game" ' +
                 'class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">' +
-                'Join ' + game.creatorDisplayName + '</button>';
+                'Join ' + game.creator.displayName + '</button>';
         item.addEventListener("click", function() {
             joinGame(key);
         });
@@ -64,8 +64,10 @@ var Game = (function() {
 
         var user = firebase.auth().currentUser;
         var currentGame = {
-            creatorUID: user.uid,
-            creatorDisplayName: user.displayName,
+            creator: {
+                uid: user.uid,
+                displayName: user.displayName
+            },
             state: STATE.OPEN
         };
 
@@ -90,18 +92,20 @@ var Game = (function() {
      * */
     function joinGame(key) {
         console.log("Attempting to join game: ", key);
-        var currentUser = firebase.auth().currentUser;
-        ref.child(key).transaction(function(currentValue) {
+        var user = firebase.auth().currentUser;
+        ref.child(key).transaction(function(game) {
             //only join if someone else hasn't
-            if (!currentValue.joinerUID) {
-                currentValue.state = 2;
-                currentValue.joinerUID = currentUser.uid;
-                currentValue.joinerDisplayName = currentUser.displayName;
+            if (!game.joiner) {
+                game.state = 2;
+                game.joiner = {
+                    uid: user.uid,
+                    displayName: user.displayName
+                }
             }
-            return currentValue;
+            return game;
         }, function(error, committed, snapshot) {
             if (committed) {
-                if (snapshot.val().joinerUID == currentUser.uid) {
+                if (snapshot.val().joiner.uid == user.uid) {
                     enableCreateGame(false);
                     watchGame(key);
                 } else {
@@ -112,6 +116,15 @@ var Game = (function() {
                 UI.snackbar({message: "Error joining game"});
             }
         });
+    }
+
+    /*
+     * Adds an image to a game, in the appropriate place
+     * and updates the game state
+     * */
+    function addImageToGame(key, gsPath, downloadURL) {
+
+
     }
 
     /*
@@ -127,7 +140,8 @@ var Game = (function() {
         var picRef = firebase.storage().ref().child("games/" + key + "/" + firebase.auth().currentUser.uid + ".png");
 
         canvas.toBlob(function(blob) {
-            picRef.put(blob).on("state_changed",
+            var uploadTask = picRef.put(blob);
+            uploadTask.on("state_changed",
                     function(snapshot) {
                     },
                     function(error) {
@@ -135,11 +149,11 @@ var Game = (function() {
                         UI.snackbar("Error uploading photo.");
                     }, function() {
                         console.log("Image has been uploaded!");
-
                         dialog.close();
-
                         //no reason to re-download this from GCS. Just set it locally.
                         document.querySelector("#my-image").setAttribute("src", canvas.toDataURL("image/png"));
+
+                        addImageToGame(key, uploadTask.snapshot.ref.fullPath, uploadTask.snapshot.downloadURL);
                     });
         });
     }
@@ -182,25 +196,24 @@ var Game = (function() {
             console.log("Game update:", game);
 
             //if we get a null value, because remove - ignore it.
-            if(!game) {
+            if (!game) {
                 return
             }
 
             switch (game.state) {
                 case STATE.JOINED:
                 {
-                    if (game.creatorUID == firebase.auth().currentUser.uid) {
-                        UI.snackbar({message: game.joinerDisplayName + " has joined your game."});
+                    if (game.creator.uid == firebase.auth().currentUser.uid) {
+                        UI.snackbar({message: game.joiner.displayName + " has joined your game."});
                         //wait a little bit
                         window.setTimeout(function() {
-                            game.state = STATE.PICTURE;
-                            gameRef.set(game);
+                            gameRef.update({state: STATE.TAKE_PICTURE});
                         }, 1000);
                     }
                     break;
                 }
 
-                case STATE.PICTURE:
+                case STATE.TAKE_PICTURE:
                 {
                     countDownToTakingPicture(key);
                     break;
@@ -229,7 +242,7 @@ var Game = (function() {
                 var data = snapshot.val();
 
                 //ignore our own games
-                if (data.creatorUID != firebase.auth().currentUser.uid) {
+                if (data.creator.uid != firebase.auth().currentUser.uid) {
                     addJoinGameButton(snapshot.key, data);
                 }
             });
