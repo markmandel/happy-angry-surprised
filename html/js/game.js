@@ -30,6 +30,7 @@ var Game = (function() {
     var create;
     var gameList;
     var cam;
+    var dialog;
 
     /*
      * enable the ability to create a game
@@ -118,8 +119,8 @@ var Game = (function() {
      * */
     function takePicture(key) {
         var canvas = document.createElement("canvas");
-        canvas.width = 640 / 2;
-        canvas.height = 480 / 2;
+        canvas.width = 640;
+        canvas.height = 480;
         var context = canvas.getContext("2d");
         context.drawImage(cam, 0, 0, canvas.width, canvas.height);
 
@@ -134,6 +135,11 @@ var Game = (function() {
                         UI.snackbar("Error uploading photo.");
                     }, function() {
                         console.log("Image has been uploaded!");
+
+                        dialog.close();
+
+                        //no reason to re-download this from GCS. Just set it locally.
+                        document.querySelector("#my-image").setAttribute("src", canvas.toDataURL("image/png"));
                     });
         });
     }
@@ -143,7 +149,6 @@ var Game = (function() {
      * and takes a photo!
      * */
     function countDownToTakingPicture(key) {
-        var dialog = document.querySelector("#game-cam");
         var title = dialog.querySelector(".mdl-dialog__title");
         dialog.showModal();
         window.setTimeout(function() {
@@ -214,6 +219,7 @@ var Game = (function() {
 
             gameList = document.querySelector("#games ul");
             cam = document.querySelector("#cam");
+            dialog = document.querySelector("#game-cam");
 
             ref = firebase.database().ref("/games");
 
