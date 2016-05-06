@@ -65,3 +65,8 @@
 #game .face {
   width: 100%;
 }
+
+#game .emotion {
+  height: 20px;
+  text-align: center;
+}

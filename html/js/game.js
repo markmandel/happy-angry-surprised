@@ -25,6 +25,13 @@ var Game = (function() {
     var ref;
     //set of states a game can be in.
     var STATE = {OPEN: 1, JOINED: 2, TAKE_PICTURE: 3, UPLOADED_PICTURE: 4, FACE_DETECTED: 5};
+    var EMOTIONS = {
+        HAPPY: {label: "Happy", visionKey: "joyLikelihood"},
+        ANGRY: {label: "Angry", visionKey: "angerLikelihood"},
+        SURPRISED: {label: "Surprised", visionKey: "surpriseLikelihood"}
+    };
+
+    var EMOTION_SCALE = ["VERY_LIKELY", "LIKELY", "POSSIBLE"];
 
     //ui elements
     var create;
@@ -222,6 +229,36 @@ var Game = (function() {
     }
 
     /*
+     * Get a single emotion out of Vision API results
+     * */
+    function getVisionEmotion(visionResult) {
+        if (!visionResult.responses || visionResult.responses.length != 1) {
+            console.log("Error in vision result:", visionResult);
+            UI.snackbar({message: "Error getting Vision API Result"});
+            return
+        }
+
+        if (visionResult.responses[0].faceAnnotations.length != 1) {
+            UI.snackbar({message: "No face in image"});
+            return
+        }
+
+        var faceData = visionResult.responses[0].faceAnnotations[0];
+        for (var likelihood of EMOTION_SCALE) {
+            for (var key in EMOTIONS) {
+                var emotion = EMOTIONS[key];
+                //console.log("Checking: ", likelihood, emotion, faceData[emotion.visionKey]);
+                if (faceData[emotion.visionKey] == likelihood) {
+                    //console.log("FOUND!!!");
+                    return {label: emotion.label, likelihood: likelihood};
+                }
+            }
+        }
+
+        return {label: "Unknown"}
+    }
+
+    /*
      * Fire off the detection of my face!
      * */
     function detectMyFace(game) {
@@ -230,8 +267,12 @@ var Game = (function() {
             gcsPath = game.joiner.gcsPath;
         }
 
-        Vision.detectFace(gcsPath, function() {
-            console.log("detect my face worked!");
+        Vision.detectFace(gcsPath, function(result) {
+            var emotion = getVisionEmotion(result);
+
+            console.log("Emotion Found: ", emotion);
+            //TODO: Display Emotion on screen
+            //TODO: Save Emotion
         });
     }
 
@@ -247,7 +288,7 @@ var Game = (function() {
 
             //if we get a null value, because remove - ignore it.
             if (!game) {
-                UI.snackbar("Game has been closed. Please play again.");
+                UI.snackbar({message: "Game has finished. Please play again."});
                 enableCreateGame(true);
                 return
             }
