@@ -176,7 +176,8 @@ var Game = (function() {
         var title = dialog.querySelector(".mdl-dialog__title");
         dialog.showModal();
         window.setTimeout(function() {
-            title.innerText = 5;
+            //title.innerText = 5;
+            title.innerText = Math.floor(Math.random() * (10 - 3)) + 3;
             var f = function() {
                 var count = parseInt(title.innerText);
                 if (count > 1) {
