@@ -259,10 +259,24 @@ var Game = (function() {
         return {label: "Unknown", likelihood: "???"}
     }
 
+    function addEmotionToGame(key, game, emotion) {
+        var gameRef = ref.child(key);
+
+        var data = {state: STATE.FACE_DETECTED};
+
+        if (game.creator.uid == firebase.auth().currentUser.uid) {
+            data["creator/emotion"] = emotion;
+        } else {
+            data["joiner/emotion"] = emotion;
+        }
+
+        gameRef.update(data);
+    }
+
     /*
      * Fire off the detection of my face!
      * */
-    function detectMyFace(game) {
+    function detectMyFace(key, game) {
         var gcsPath = game.creator.gcsPath;
         if (game.joiner.uid == firebase.auth().currentUser.uid) {
             gcsPath = game.joiner.gcsPath;
@@ -273,8 +287,24 @@ var Game = (function() {
 
             console.log("Emotion Found: ", emotion);
             document.querySelector("#my-image-emotion h3").innerText = emotion.label + " ("+ emotion.likelihood +")";
-            //TODO: Save Emotion
+            addEmotionToGame(key, game, emotion)
         });
+    }
+
+    /*
+     * When an image has been uploaded, display it
+     * */
+    function displayDetectedEmotion(game) {
+        var emotionText = document.querySelector("#other-image-emotion h3");
+        var user = firebase.auth().currentUser;
+
+        if (game.creator.emotion && game.creator.uid != user.uid) {
+            var emotion = game.creator.emotion;
+            emotionText.innerText = emotion.label + " ("+ emotion.likelihood +")";
+        } else if (game.joiner.emotion && game.joiner.uid != user.uid) {
+            var emotion = game.joiner.emotion;
+            emotionText.innerText = emotion.label + " ("+ emotion.likelihood +")";
+        }
     }
 
     /*
@@ -309,7 +339,10 @@ var Game = (function() {
                     break;
                 case STATE.UPLOADED_PICTURE:
                     displayUploadedPicture(game);
-                    detectMyFace(game);
+                    detectMyFace(key, game);
+                    break;
+                case STATE.FACE_DETECTED:
+                    displayDetectedEmotion(game);
                     break;
             }
         })
