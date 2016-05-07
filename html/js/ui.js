@@ -24,8 +24,8 @@ var UI = (function() {
     //public functions
     return {
         /*
-        * Fill layout vertically in the browser
-        * */
+         * Fill layout vertically in the browser
+         * */
         fillVertically: function() {
             //fill vertically
             var header = document.querySelector("header");
@@ -41,10 +41,25 @@ var UI = (function() {
         },
 
         /*
-        * Simple way to show a snackbar at the bottom of the page
-        * */
+         * Simple way to show a snackbar at the bottom of the page
+         * */
         snackbar: function(data) {
             document.querySelector("#snackbar").MaterialSnackbar.showSnackbar(data);
+        },
+
+        /*
+         * initialisation for some ui elements that don't fit anywhere else
+         * */
+        init: function() {
+            document.querySelector("#help").addEventListener("click", function() {
+                document.querySelector('#help-dialog').showModal();
+            });
+            
+            var result = document.querySelector("#result");
+            result.querySelector("button").addEventListener("click", function() {
+                //result.close();
+                window.location.reload();
+            });
         }
     }
 })();

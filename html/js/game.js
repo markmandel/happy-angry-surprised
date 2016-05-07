@@ -24,14 +24,14 @@ var Game = (function() {
 
     var ref;
     //set of states a game can be in.
-    var STATE = {OPEN: 1, JOINED: 2, TAKE_PICTURE: 3, UPLOADED_PICTURE: 4, FACE_DETECTED: 5};
+    var STATE = {OPEN: 1, JOINED: 2, TAKE_PICTURE: 3, UPLOADED_PICTURE: 4, FACE_DETECTED: 5, COMPLETE: 6};
     var EMOTIONS = {
         HAPPY: {label: "Happy", visionKey: "joyLikelihood"},
         ANGRY: {label: "Angry", visionKey: "angerLikelihood"},
         SURPRISED: {label: "Surprised", visionKey: "surpriseLikelihood"}
     };
-
     var EMOTION_SCALE = ["VERY_LIKELY", "LIKELY", "POSSIBLE"];
+    var UNKNOWN_EMOTION = {label: "Unknown", likelihood: "???"};
 
     //ui elements
     var create;
@@ -256,7 +256,7 @@ var Game = (function() {
             }
         }
 
-        return {label: "Unknown", likelihood: "???"}
+        return UNKNOWN_EMOTION
     }
 
     function addEmotionToGame(key, game, emotion) {
@@ -282,11 +282,16 @@ var Game = (function() {
             gcsPath = game.joiner.gcsPath;
         }
 
+        //may not be my path, so quit out early, as I may not have a value.
+        if (!gcsPath) {
+            return
+        }
+
         Vision.detectFace(gcsPath, function(result) {
             var emotion = getVisionEmotion(result);
 
             console.log("Emotion Found: ", emotion);
-            document.querySelector("#my-image-emotion h3").innerText = emotion.label + " ("+ emotion.likelihood +")";
+            document.querySelector("#my-image-emotion h3").innerText = emotion.label + " (" + emotion.likelihood + ")";
             addEmotionToGame(key, game, emotion)
         });
     }
@@ -298,13 +303,94 @@ var Game = (function() {
         var emotionText = document.querySelector("#other-image-emotion h3");
         var user = firebase.auth().currentUser;
 
+        console.log("displayDetectedEmotion", game, user.uid);
         if (game.creator.emotion && game.creator.uid != user.uid) {
+            console.log("setting creator emotion text");
             var emotion = game.creator.emotion;
-            emotionText.innerText = emotion.label + " ("+ emotion.likelihood +")";
+            emotionText.innerText = emotion.label + " (" + emotion.likelihood + ")";
         } else if (game.joiner.emotion && game.joiner.uid != user.uid) {
+            console.log("setting joiner emotion text");
             var emotion = game.joiner.emotion;
-            emotionText.innerText = emotion.label + " ("+ emotion.likelihood +")";
+            emotionText.innerText = emotion.label + " (" + emotion.likelihood + ")";
         }
+    }
+
+    /*
+     * If both players have emotions, we'll work out the
+     * winner, and update the state to COMPLETE
+     * */
+    function determineWinner(key, game) {
+        var gameRef = ref.child(key);
+
+        //the creator can manage this. So if you aren't them, exit now.
+        if (game.creator.uid != firebase.auth().currentUser.uid) {
+            return
+        }
+        //make sure we have both emotions.
+        if (!(game.creator.emotion && game.joiner.emotion)) {
+            return
+        }
+
+        console.log("We both have emotions!");
+        var creatorWins = false;
+        var joinerWins = false;
+
+        if (game.creator.emotion.label == EMOTIONS.HAPPY.label &&
+                game.joiner.emotion.label == EMOTIONS.ANGRY.label) {
+            creatorWins = true;
+        } else if (game.creator.emotion.label == EMOTIONS.SURPRISED.label &&
+                game.joiner.emotion.label == EMOTIONS.HAPPY.label) {
+            creatorWins = true;
+        } else if (game.creator.emotion.label == EMOTIONS.ANGRY.label &&
+                game.joiner.emotion.label == EMOTIONS.SURPRISED.label) {
+            creatorWins = true;
+        } else if (game.creator.emotion.label == game.joiner.emotion.label) {
+            //do nothing, its a draw
+        } else if (game.creator.emotion.label == UNKNOWN_EMOTION.label) {
+            joinerWins = true;
+        } else if (game.joiner.emotion.label == UNKNOWN_EMOTION.label) {
+            creatorWins = true;
+        } else {
+            joinerWins = true;
+        }
+
+        console.log("Setting game state as complete");
+        gameRef.update({
+            state: STATE.COMPLETE,
+            "creator/wins": creatorWins,
+            "joiner/wins": joinerWins
+        });
+    }
+
+    /*
+    * Displays in the UI who won!
+    * */
+    function showWinner(game) {
+        var result = document.querySelector("#result");
+        var resultTitle = result.querySelector(".mdl-dialog__title");
+        if (game.creator.wins == game.joiner.wins) {
+            resultTitle.innerText = "It was a DRAW! 😕";
+        }
+
+        var player = game.creator;
+        if (game.joiner.uid == firebase.auth().currentUser.uid) {
+            player = game.joiner;
+        }
+
+        if (player.wins) {
+            resultTitle.innerText = "YOU WON! 😃";
+        } else {
+            resultTitle.innerHTML = "Sorry.<br/>You lost. 😢"
+        }
+
+        result.showModal();
+    }
+
+    /*
+    * Delete the game once done.
+    * */
+    function deleteGame(key) {
+        ref.child(key).remove();
     }
 
     /*
@@ -343,6 +429,11 @@ var Game = (function() {
                     break;
                 case STATE.FACE_DETECTED:
                     displayDetectedEmotion(game);
+                    determineWinner(key, game);
+                    break;
+                case STATE.COMPLETE:
+                        showWinner(game);
+                        //deleteGame(key);
                     break;
             }
         })
@@ -388,4 +479,5 @@ var Game = (function() {
             enableCreateGame(true);
         }
     };
-})();
+})
+();

@@ -50,7 +50,7 @@
         <div class="mdl-layout__header-row">
             <span class="mdl-layout-title">HAPPY 😃 ANGRY 😠 SURPRISED 😯</span>
             <div class="mdl-layout-spacer"></div>
-            <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" onclick="document.querySelector('#help-dialog').showModal();">
+            <button id="help" class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored">
                 <i class="material-icons">help</i>
             </button>
             <button id="logout"
@@ -186,6 +186,12 @@
         </div>
     </main>
 </div>
+<dialog id="result" class="mdl-dialog">
+    <h2 class="mdl-dialog__title"></h2>
+    <div class="mdl-dialog__actions">
+        <button type="button" class="mdl-button">Play Again?</button>
+    </div>
+</dialog>
 <div id="snackbar" class="mdl-js-snackbar mdl-snackbar">
     <div class="mdl-snackbar__text"></div>
     <button class="mdl-snackbar__action" type="button"></button>
