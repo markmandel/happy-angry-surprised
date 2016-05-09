@@ -368,8 +368,11 @@ var Game = (function() {
     function showWinner(game) {
         var result = document.querySelector("#result");
         var resultTitle = result.querySelector(".mdl-dialog__title");
+
         if (game.creator.wins == game.joiner.wins) {
             resultTitle.innerText = "It was a DRAW! 😕";
+            result.showModal();
+            return;
         }
 
         var player = game.creator;
