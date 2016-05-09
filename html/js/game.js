@@ -27,10 +27,10 @@ var Game = (function() {
     var STATE = {OPEN: 1, JOINED: 2, TAKE_PICTURE: 3, UPLOADED_PICTURE: 4, FACE_DETECTED: 5, COMPLETE: 6};
     var EMOTIONS = {
         HAPPY: {label: "Happy", visionKey: "joyLikelihood"},
-        ANGRY: {label: "Angry", visionKey: "angerLikelihood"},
-        SURPRISED: {label: "Surprised", visionKey: "surpriseLikelihood"}
+        SURPRISED: {label: "Surprised", visionKey: "surpriseLikelihood"},
+        ANGRY: {label: "Angry", visionKey: "angerLikelihood"}
     };
-    var EMOTION_SCALE = ["VERY_LIKELY", "LIKELY", "POSSIBLE"];
+    var EMOTION_SCALE = ["UNLIKELY", "VERY_LIKELY", "LIKELY", "POSSIBLE"];
     var UNKNOWN_EMOTION = {label: "Unknown", likelihood: "???"};
 
     //ui elements

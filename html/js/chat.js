@@ -85,18 +85,10 @@ var Chat = (function() {
 
             send.addEventListener("click", sendChatMessage);
 
-            ref.limitToLast(20).once("value", function(snapshot) {
-                snapshot.forEach(function(data) {
-                    //get initial chat data
-                    var message = data.val();
-                    addChatMessage(message.name, message.message);
-                });
-
-                //once loaded initial set, let's grab up to date chat messages.
-                ref.on("child_added", function(snapshot) {
-                    var message = snapshot.val();
-                    addChatMessage(message.name, message.message);
-                });
+            //once loaded initial set, let's grab up to date chat messages.
+            ref.on("child_added", function(snapshot) {
+                var message = snapshot.val();
+                addChatMessage(message.name, message.message);
             });
         },
 
