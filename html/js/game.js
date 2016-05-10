@@ -126,6 +126,19 @@ var Game = (function() {
     }
 
     /*
+     * Actions once I have joined a game
+     * */
+    function joinedGame(game, gameRef) {
+        if (game.creator.uid == firebase.auth().currentUser.uid) {
+            UI.snackbar({message: game.joiner.displayName + " has joined your game."});
+            //wait a little bit
+            window.setTimeout(function() {
+                gameRef.update({state: STATE.TAKE_PICTURE});
+            }, 1000);
+        }
+    }
+
+    /*
      * Adds an image to a game, in the appropriate place
      * and updates the game state
      * */
@@ -363,8 +376,8 @@ var Game = (function() {
     }
 
     /*
-    * Displays in the UI who won!
-    * */
+     * Displays in the UI who won!
+     * */
     function showWinner(game) {
         var result = document.querySelector("#result");
         var resultTitle = result.querySelector(".mdl-dialog__title");
@@ -390,8 +403,8 @@ var Game = (function() {
     }
 
     /*
-    * Delete the game once done.
-    * */
+     * Delete the game once done.
+     * */
     function deleteGame(key) {
         ref.child(key).remove();
     }
@@ -413,15 +426,10 @@ var Game = (function() {
                 return
             }
 
+            //TODO: Refactor so all functions get the gameRef, instead of the key.
             switch (game.state) {
                 case STATE.JOINED:
-                    if (game.creator.uid == firebase.auth().currentUser.uid) {
-                        UI.snackbar({message: game.joiner.displayName + " has joined your game."});
-                        //wait a little bit
-                        window.setTimeout(function() {
-                            gameRef.update({state: STATE.TAKE_PICTURE});
-                        }, 1000);
-                    }
+                    joinedGame(game, gameRef);
                     break;
                 case STATE.TAKE_PICTURE:
                     countDownToTakingPicture(key, game);
@@ -435,8 +443,8 @@ var Game = (function() {
                     determineWinner(key, game);
                     break;
                 case STATE.COMPLETE:
-                        showWinner(game);
-                        //deleteGame(key);
+                    showWinner(game);
+                    //deleteGame(key);
                     break;
             }
         })

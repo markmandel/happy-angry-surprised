@@ -65,8 +65,8 @@ var Session = (function() {
      * Sign in with a username and password
      * */
     function signInWithEmailandPassword() {
-        var email = document.querySelector("#email")
-        var password = document.querySelector("#password")
+        var email = document.querySelector("#email");
+        var password = document.querySelector("#password");
         var valid = Forms.validateForm([email, password]);
 
         if (valid) {
