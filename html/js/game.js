@@ -103,7 +103,7 @@ var Game = (function() {
         ref.child(key).transaction(function(game) {
             //only join if someone else hasn't
             if (!game.joiner) {
-                game.state = 2;
+                game.state = STATE.JOINED;
                 game.joiner = {
                     uid: user.uid,
                     displayName: user.displayName
