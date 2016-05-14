@@ -207,8 +207,14 @@ var Game = (function() {
         var title = dialog.querySelector(".mdl-dialog__title");
         dialog.showModal();
         window.setTimeout(function() {
-            //title.innerText = 5;
-            title.innerText = Math.floor(Math.random() * (10 - 3)) + 3;
+            title.innerText = 5;
+
+            //for debugging purposes
+            if (window.location.search == "?debug") {
+                title.innerText = 10;
+            }
+
+            //title.innerText = Math.floor(Math.random() * (10 - 3)) + 3;
             var f = function() {
                 var count = parseInt(title.innerText);
                 if (count > 1) {
@@ -466,8 +472,8 @@ var Game = (function() {
 
             var openGames = ref.orderByChild("state").equalTo(STATE.OPEN);
             openGames.on("child_added", function(snapshot) {
-                console.log("games:", snapshot);
                 var data = snapshot.val();
+                console.log("Game Added:", data);
 
                 //ignore our own games
                 if (data.creator.uid != firebase.auth().currentUser.uid) {
@@ -480,7 +486,7 @@ var Game = (function() {
                 if (item) {
                     item.remove();
                 }
-            })
+            });
         },
 
         /*
