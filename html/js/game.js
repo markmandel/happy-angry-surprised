@@ -393,7 +393,7 @@ var Game = (function() {
         }
 
         if (game.creator.wins == game.joiner.wins) {
-            resultTitle.innerText = "It was a DRAW! 😕";
+            resultTitle.innerText = "It was a DRAW! 😒";
             result.showModal();
             return;
         }
