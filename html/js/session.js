@@ -82,19 +82,6 @@ var Session = (function() {
     }
 
     /*
-     * Take the credential, and link it
-     * TODO: Actually use this to link to a different account.
-     * */
-    function link(credential) {
-        console.log("Attempting to link account");
-        firebase.auth().currentUser.link(credential).then(function(user) {
-            console.log("Account linking success", user);
-        }, function(error) {
-            console.log("Account linking error", error);
-        });
-    }
-
-    /*
      * Sign the user in, with the given credentials
      * */
     function signIn(credential) {
