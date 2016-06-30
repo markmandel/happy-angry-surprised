@@ -278,9 +278,7 @@ var Game = (function() {
         return UNKNOWN_EMOTION
     }
 
-    function addEmotionToGame(key, game, emotion) {
-        var gameRef = ref.child(key);
-
+    function addEmotionToGame(gameRef, game, emotion) {
         var data = {state: STATE.FACE_DETECTED};
 
         if (game.creator.uid == firebase.auth().currentUser.uid) {
@@ -295,7 +293,7 @@ var Game = (function() {
     /*
      * Fire off the detection of my face!
      * */
-    function detectMyFace(key, game) {
+    function detectMyFace(gameRef, game) {
         var gcsPath = game.creator.gcsPath;
         if (game.joiner.uid == firebase.auth().currentUser.uid) {
             gcsPath = game.joiner.gcsPath;
@@ -311,7 +309,7 @@ var Game = (function() {
 
             console.log("Emotion Found: ", emotion);
             document.querySelector("#my-image-emotion h3").innerText = emotion.label + " (" + emotion.likelihood + ")";
-            addEmotionToGame(key, game, emotion)
+            addEmotionToGame(gameRef, game, emotion)
         });
     }
 
@@ -446,7 +444,7 @@ var Game = (function() {
                     break;
                 case STATE.UPLOADED_PICTURE:
                     displayUploadedPicture(game);
-                    detectMyFace(key, game);
+                    detectMyFace(gameRef, game);
                     break;
                 case STATE.FACE_DETECTED:
                     displayDetectedEmotion(game);
