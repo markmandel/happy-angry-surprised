@@ -17,27 +17,27 @@
 "use strict";
 
 /*
- * Deals with layout and UI
+ * Module for generic Layout and UI controls
  */
 var UI = (function() {
 
-    //public functions
+    // Exposed functions
     return {
         /*
          * Fill layout vertically in the browser
          * */
         fillVertically: function() {
             //fill vertically
-            var header = document.querySelector("header");
+            var pageHeader = document.querySelector("header");
             var chat = document.querySelector("#chat");
-            chat.style.height = (window.innerHeight - header.clientHeight - 32) + "px";
+            chat.style.height = (window.innerHeight - pageHeader.clientHeight - 32) + "px";
 
             //expand out chat area
             var messages = document.querySelector("#chat-messages");
-            var header = document.querySelector("#chat-header");
+            var chatHeader = document.querySelector("#chat-header");
             var input = document.querySelector("#chat-input");
 
-            messages.style.height = (chat.clientHeight - (header.clientHeight + input.clientHeight)) + "px";
+            messages.style.height = (chat.clientHeight - (chatHeader.clientHeight + input.clientHeight)) + "px";
 
             //manage image height
             var images = document.querySelectorAll("#game .face");
@@ -49,20 +49,23 @@ var UI = (function() {
         },
 
         /*
-         * Simple way to show a snackbar at the bottom of the page
+         * Simple way to show a MDL snackbar at the bottom of the page
+         * https://getmdl.io/components/index.html#snackbar-section
          * */
         snackbar: function(data) {
             document.querySelector("#snackbar").MaterialSnackbar.showSnackbar(data);
         },
 
         /*
-         * initialisation for some ui elements that don't fit anywhere else
+         * Initialisation for some generic ui elements
          * */
         init: function() {
+            // help dialog
             document.querySelector("#help").addEventListener("click", function() {
                 document.querySelector('#help-dialog').showModal();
             });
-            
+
+            // play again dialog
             var result = document.querySelector("#result");
             result.querySelector("button").addEventListener("click", function() {
                 //result.close();

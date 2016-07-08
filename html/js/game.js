@@ -17,9 +17,8 @@
 "use strict";
 
 /**
- * Module for joining and playing happy, angry, surprised.
+ * Module that controls all the gameplay logic and UI of Happy, Angry, Surprised.
  */
-
 var Game = (function() {
 
     var ref;
@@ -40,14 +39,15 @@ var Game = (function() {
     var dialog;
 
     /*
-     * enable the ability to create a game
+     * Enable the ability (via the UI) for the currently logged in player
+     * to create a game
      * */
     function enableCreateGame(enabled) {
         create.disabled = !enabled;
     }
 
     /*
-     * Add the join game button to the list
+     * Add a join game button to the list, for a given game.
      * */
     function addJoinGameButton(key, game) {
         var item = document.createElement("li");
@@ -95,7 +95,7 @@ var Game = (function() {
     }
 
     /*
-     * Join a game that a person has already opened
+     * Join an open game, via it's unique key.
      * */
     function joinGame(key) {
         console.log("Attempting to join game: ", key);
@@ -126,7 +126,8 @@ var Game = (function() {
     }
 
     /*
-     * Actions once I have joined a game
+     * One the current player has joined a game, update the UI
+     * and move the game state to TAKE_PICTURE
      * */
     function joinedGame(game, gameRef) {
         if (game.creator.uid == firebase.auth().currentUser.uid) {
@@ -139,8 +140,8 @@ var Game = (function() {
     }
 
     /*
-     * Adds an image to a game, in the appropriate place
-     * and updates the game state
+     * Adds the image data to a game in Firebase
+     * and updates the game state to UPLOADED_PICTURE
      * */
     function addImageToGame(gameRef, game, gcsPath, downloadURL) {
         var data = {state: STATE.UPLOADED_PICTURE};
@@ -156,9 +157,9 @@ var Game = (function() {
         gameRef.update(data);
     }
 
-
     /*
-     * Take the image and save it to GCS
+     * Take the image blob and save it via the imageRef Firebase storage reference.
+     * Calls the successCallback once the upload is complete.
      * */
     function saveImage(imageRef, blob, successCallback) {
         var uploadTask = imageRef.put(blob);
@@ -175,9 +176,10 @@ var Game = (function() {
     }
 
     /*
-     * Take a picture, and upload it to file storage
+     * Take a picture via the webcam, and upload it to file storage
      * */
     function takePicture(gameRef, game) {
+        // create a canvas, so we can get a draw the video stream on it
         var canvas = document.createElement("canvas");
         canvas.width = 640;
         canvas.height = 480;
@@ -186,6 +188,7 @@ var Game = (function() {
 
         var imageRef = firebase.storage().ref().child("games/" + gameRef.key + "/" + firebase.auth().currentUser.uid + ".png");
 
+        // convert the canvas to a png blob
         canvas.toBlob(function(blob) {
             saveImage(imageRef, blob, function(uploadTask) {
                 dialog.close();
@@ -199,7 +202,7 @@ var Game = (function() {
     }
 
     /*
-     * Show the UI for taking a picture, counts down
+     * Show the UI for taking a picture, which counts down,
      * and takes a photo!
      * */
     function countDownToTakingPicture(gameRef, game) {
@@ -233,7 +236,8 @@ var Game = (function() {
     }
 
     /*
-     * When an image has been uploaded, display it
+     * When an image has been uploaded from the other player
+     * display it on the page.
      * */
     function displayUploadedPicture(game) {
         var image = document.querySelector("#other-image");
@@ -247,7 +251,9 @@ var Game = (function() {
     }
 
     /*
-     * Get a single emotion out of Vision API results
+     * Get a single emotion value out of Vision API results
+     * Either, Happy, Surprised, Angry or Unknown.
+     *
      * */
     function getVisionEmotion(visionResult) {
         if (!visionResult.responses || visionResult.responses.length != 1) {
@@ -266,9 +272,7 @@ var Game = (function() {
         for (var likelihood of EMOTION_SCALE) {
             for (var key in EMOTIONS) {
                 var emotion = EMOTIONS[key];
-                //console.log("Checking: ", likelihood, emotion, faceData[emotion.visionKey]);
                 if (faceData[emotion.visionKey] == likelihood) {
-                    //console.log("FOUND!!!");
                     return {label: emotion.label, likelihood: likelihood};
                 }
             }
@@ -277,6 +281,10 @@ var Game = (function() {
         return UNKNOWN_EMOTION
     }
 
+    /*
+    * Add the current player's emotion data to the current game
+    * and save it in Firebase.
+    * */
     function addEmotionToGame(gameRef, game, emotion) {
         var data = {state: STATE.FACE_DETECTED};
 
@@ -290,9 +298,11 @@ var Game = (function() {
     }
 
     /*
-     * Fire off the detection of my face!
+     * Once the game has the stored image from the webcam picture
+     * Run this to detect what emotion is being shown on the face
+     * in the picture, and add it to the game.
      * */
-    function detectMyFace(gameRef, game) {
+    function detectMyFacialEmotion(gameRef, game) {
         var gcsPath = game.creator.gcsPath;
         if (game.joiner.uid == firebase.auth().currentUser.uid) {
             gcsPath = game.joiner.gcsPath;
@@ -313,7 +323,7 @@ var Game = (function() {
     }
 
     /*
-     * When an image has been uploaded, display it
+     * Display on UI the detected emotion from Cloud Vision API.
      * */
     function displayDetectedEmotion(game) {
         var emotionText = document.querySelector("#other-image-emotion h3");
@@ -333,7 +343,7 @@ var Game = (function() {
 
     /*
      * If both players have emotions, we'll work out the
-     * winner, and update the state to COMPLETE
+     * winner, save the results, and update the game state to COMPLETE.
      * */
     function determineWinner(gameRef, game) {
         //the creator can manage this. So if you aren't them, exit now.
@@ -408,15 +418,8 @@ var Game = (function() {
     }
 
     /*
-     * Delete the game once done.
-     * */
-    function deleteGame(key) {
-        ref.child(key).remove();
-    }
-
-    /*
      * Watch the current game, and depending on state
-     * changes, perform actions.
+     * changes, perform actions to move the game on to the next state.
      * */
     function watchGame(key) {
         var gameRef = ref.child(key);
@@ -431,7 +434,6 @@ var Game = (function() {
                 return
             }
 
-            //TODO: Refactor so all functions get the gameRef, instead of the key.
             switch (game.state) {
                 case STATE.JOINED:
                     joinedGame(game, gameRef);
@@ -441,7 +443,7 @@ var Game = (function() {
                     break;
                 case STATE.UPLOADED_PICTURE:
                     displayUploadedPicture(game);
-                    detectMyFace(gameRef, game);
+                    detectMyFacialEmotion(gameRef, game);
                     break;
                 case STATE.FACE_DETECTED:
                     displayDetectedEmotion(game);
@@ -454,9 +456,11 @@ var Game = (function() {
         })
     }
 
+    // Exposed functions
     return {
         /*
-         * Initialisation function
+         * Firebase event handlers for when open games are created,
+         * and also handing when they are removed.
          * */
         init: function() {
             create = document.querySelector("#create-game");
@@ -488,7 +492,7 @@ var Game = (function() {
         },
 
         /*
-         * Event handler once we have logged in
+         * Enable creation of open games once the player has logged in.
          * */
         onlogin: function() {
             enableCreateGame(true);

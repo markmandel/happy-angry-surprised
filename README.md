@@ -24,11 +24,12 @@ to be.
 
 ### config.js
 
-This is the file in which all configuration information goes. Currently it is set to placeholder values that will need to be replaced.
+This is the file in which all configuration and authentication information goes for Firebase and Googler Cloud Platform.
+Currently it is set to placeholder values that will need to be replaced.
 
 #### `firebase`
 
-The firebase configuration will need to be retrieved from the project overview page, by clicking the "Add Firebase to your web app" button.
+The Firebase configuration will need to be retrieved from the project overview page, by clicking the "Add Firebase to your web app" button.
 
 #### `visionAPI.key`
 

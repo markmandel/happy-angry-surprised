@@ -15,7 +15,7 @@
  */
 
 /**
- * Helpers for managing forms
+ * Module for managing form input and validation
  */
 
 Forms = (function() {

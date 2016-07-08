@@ -16,8 +16,7 @@
 
 
 /**
- * Place to put all your
- * configuration keys
+ * This is just a place to put all your API authentication keys
  */
 Config = function() {
     return {

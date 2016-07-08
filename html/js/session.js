@@ -17,7 +17,7 @@
 "use strict";
 
 /**
- * Module for managing auth
+ * Module for auth and session management
  */
 var Session = (function() {
     var loginDialog;
@@ -37,7 +37,7 @@ var Session = (function() {
             console.log("I am now logged in");
 
             if (user.providerData.length == 0) {
-                //if no auth provider, it's firebase
+                //if no auth provider, it's firebase (in this context)
                 firebaseProvider = true;
             } else if (user.providerData[0].providerId == "google.com") {
                 googleProvider = true;
@@ -82,7 +82,8 @@ var Session = (function() {
     }
 
     /*
-     * Sign the user in, with the given credentials
+     * Sign the user in, with the given credentials,
+     * which come from a Firebase Auth Provider
      * */
     function signIn(credential) {
         firebase.auth().signInWithCredential(credential).then(function(user) {
@@ -93,7 +94,7 @@ var Session = (function() {
     }
 
     /*
-     * Close the dialog, if it is open
+     * Close the login dialog, but only if it's open
      * */
     function closeLoginDialog() {
         var dialog = document.querySelector("#login-dialog");
@@ -104,7 +105,7 @@ var Session = (function() {
 
     /*
      * Do the work to actually create an account
-     * with firebase
+     * with Firebase
      * */
     function submitCreateAccount() {
         //fields
@@ -131,12 +132,10 @@ var Session = (function() {
         }
     }
 
-    /*
-     * Exported functions
-     * */
+    // Exported functions
     return {
         /*
-         * initialisation function of this module
+         * Sets up event listeners for login/logout UI elements.
          * */
         init: function() {
             loginDialog = document.querySelector("#login-dialog");
@@ -178,7 +177,8 @@ var Session = (function() {
 })();
 
 /*
- * Make life easier for the google signin button, have a global function
+ * Having a global function for Google, makes it much easier to integrate
+ * the Google sign in functionality.
  * */
 function googleSignin(googleUser) {
     Session.googleSignin(googleUser);

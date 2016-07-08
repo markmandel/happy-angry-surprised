@@ -17,7 +17,8 @@
 "use strict";
 
 /**
- * Module for interacting with the cloud vision API
+ * Module for interacting with the Cloud Vision API
+ * https://cloud.google.com/vision/
  */
 var Vision = (function() {
 
@@ -33,13 +34,10 @@ var Vision = (function() {
         };
     }
 
-    /*
-     * Exposed functions
-     * */
+    // Exposed functions
     return {
-
         /*
-         * Detect a fact in a gcsBucket image
+         * Detect a face in an image stored in a gcsBucket
          * */
         detectFace: function(gcsPath, successCallback) {
             console.log("Sending face request for image", gcsPath);

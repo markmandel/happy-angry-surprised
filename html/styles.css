@@ -13,7 +13,6 @@
 }
 
 /* chat styling */
-
 #chat textarea {
   width: 100%;
   resize: none;
@@ -33,14 +32,12 @@
 }
 
 /* game list styling */
-
 #games ul {
   list-style: none;
   padding-left: 10px;
 }
 
 /* camera dialog */
-
 #game-cam {
   width: 680px;
 }

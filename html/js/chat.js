@@ -17,7 +17,7 @@
 "use strict";
 
 /**
- * Module for managing the Chat system
+ * Module for managing the real-time chat.
  */
 var Chat = (function() {
     var send;
@@ -26,7 +26,7 @@ var Chat = (function() {
     var ref;
 
     /*
-     * Turn on or off chat
+     * Turn on or off chat UI capabilities
      * */
     function enableChat(enable) {
         console.log("enabling chat: ", enable);
@@ -36,7 +36,7 @@ var Chat = (function() {
     }
 
     /*
-     * Send a chat message to firebase
+     * Push a chat message to Firebase
      * */
     function sendChatMessage() {
         enableChat(false);
@@ -68,12 +68,11 @@ var Chat = (function() {
         messages.scrollTop = messageList.scrollHeight;
     }
 
-    /*
-     * Exposed functions
-     * */
+    // Exposed functions
     return {
         /*
-         * Initialisation function
+         * Set up click handlers for the chat UI
+         * Add Firebase listeners to /chat to act when chat messages are sent to Firebase
          * */
         init: function() {
             send = document.querySelector("#send-chat");
@@ -93,7 +92,7 @@ var Chat = (function() {
         },
 
         /*
-         * Call when the user has logged in
+         * Enable chat when the user has logged in.
          * */
         onlogin: function() {
             enableChat(true);

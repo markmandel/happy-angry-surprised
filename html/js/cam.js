@@ -17,13 +17,19 @@
 "use strict";
 
 /**
- * Module for controlling the camera
+ * Module for controlling the Web Camera
  */
 
 var Cam = (function() {
     var cam;
 
+    // Exported functions
     return {
+
+        /*
+        * Gets the Web Camera from getUserMedia and connects it to
+        * the #cam video element.
+        * */
         init: function() {
             cam = document.querySelector("#cam");
 
