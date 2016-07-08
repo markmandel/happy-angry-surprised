@@ -142,8 +142,7 @@ var Game = (function() {
      * Adds an image to a game, in the appropriate place
      * and updates the game state
      * */
-    function addImageToGame(key, game, gcsPath, downloadURL) {
-        var gameRef = ref.child(key);
+    function addImageToGame(gameRef, game, gcsPath, downloadURL) {
         var data = {state: STATE.UPLOADED_PICTURE};
 
         if (game.creator.uid == firebase.auth().currentUser.uid) {
@@ -178,14 +177,14 @@ var Game = (function() {
     /*
      * Take a picture, and upload it to file storage
      * */
-    function takePicture(key, game) {
+    function takePicture(gameRef, game) {
         var canvas = document.createElement("canvas");
         canvas.width = 640;
         canvas.height = 480;
         var context = canvas.getContext("2d");
         context.drawImage(cam, 0, 0, canvas.width, canvas.height);
 
-        var imageRef = firebase.storage().ref().child("games/" + key + "/" + firebase.auth().currentUser.uid + ".png");
+        var imageRef = firebase.storage().ref().child("games/" + gameRef.key + "/" + firebase.auth().currentUser.uid + ".png");
 
         canvas.toBlob(function(blob) {
             saveImage(imageRef, blob, function(uploadTask) {
@@ -194,7 +193,7 @@ var Game = (function() {
                 document.querySelector("#my-image").setAttribute("src", canvas.toDataURL("image/png"));
                 var uploadRef = uploadTask.snapshot.ref;
                 var gcsPath = "gs://" + uploadRef.bucket + "/" + uploadRef.fullPath;
-                addImageToGame(key, game, gcsPath, uploadTask.snapshot.downloadURL);
+                addImageToGame(gameRef, game, gcsPath, uploadTask.snapshot.downloadURL);
             })
         });
     }
@@ -203,7 +202,7 @@ var Game = (function() {
      * Show the UI for taking a picture, counts down
      * and takes a photo!
      * */
-    function countDownToTakingPicture(key, game) {
+    function countDownToTakingPicture(gameRef, game) {
         var title = dialog.querySelector(".mdl-dialog__title");
         dialog.showModal();
         window.setTimeout(function() {
@@ -225,7 +224,7 @@ var Game = (function() {
                     console.log("Taking picture!");
                     title.innerText = "CHEESE!";
                     cam.pause();
-                    takePicture(key, game);
+                    takePicture(gameRef, game);
                     document.querySelector("#cam-progress").style.display = "block";
                 }
             };
@@ -440,7 +439,7 @@ var Game = (function() {
                     joinedGame(game, gameRef);
                     break;
                 case STATE.TAKE_PICTURE:
-                    countDownToTakingPicture(key, game);
+                    countDownToTakingPicture(gameRef, game);
                     break;
                 case STATE.UPLOADED_PICTURE:
                     displayUploadedPicture(game);

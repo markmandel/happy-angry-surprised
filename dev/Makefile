@@ -10,9 +10,10 @@
 #     \_/ \__,_|_|  |_|\__,_|_.__/|_|\___|___/
 #
 
-PROJECT=$(shell gcloud config list project | awk 'FNR ==2 { print $$3 }')
+PROJECT?=$(shell gcloud config list project | awk 'FNR ==2 { print $$3 }')
 TAG=gcr.io/$(PROJECT)/firebase-multiplayer
 NAME=firebase-multiplayer-shell
+BUILD_NO_CACHE=false
 
 #Directory that this Makefile is in.
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -28,7 +29,7 @@ project_path := $(realpath $(current_path)/..)
 
 # build the docker dev image
 build:
-	docker build --tag=$(TAG) $(current_path)
+	docker build --no-cache=$(BUILD_NO_CACHE) --tag=$(TAG) $(current_path)
 
 push:
 	gcloud docker push $(TAG)
