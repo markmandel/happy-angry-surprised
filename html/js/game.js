@@ -335,9 +335,7 @@ var Game = (function() {
      * If both players have emotions, we'll work out the
      * winner, and update the state to COMPLETE
      * */
-    function determineWinner(key, game) {
-        var gameRef = ref.child(key);
-
+    function determineWinner(gameRef, game) {
         //the creator can manage this. So if you aren't them, exit now.
         if (game.creator.uid != firebase.auth().currentUser.uid) {
             return
@@ -447,11 +445,10 @@ var Game = (function() {
                     break;
                 case STATE.FACE_DETECTED:
                     displayDetectedEmotion(game);
-                    determineWinner(key, game);
+                    determineWinner(gameRef, game);
                     break;
                 case STATE.COMPLETE:
                     showWinner(game);
-                    //deleteGame(key);
                     break;
             }
         })
