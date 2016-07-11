@@ -44,7 +44,7 @@ and create a new Browser API key.
 **NOTE: DO NOT DO THIS IN PRODUCTION. PUTTING YOUR API KEY IN CLIENT CODE IS NOT A GOOD IDEA**
 
 ## Single Player / Test Mode
-If you are testing on your own, append `?debug` to the URL, and it will make the picture taking countdown 
+If you are testing on your own, append `?debug` to the URL, and it will make the picture taking countdown
 on that particular game increase to 10 seconds.
 
 This means you can have two browser instances running, one with the standard countdown of five seconds, and one

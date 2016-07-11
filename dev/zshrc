@@ -15,7 +15,7 @@ plugins=(debian git git-extras colored-man zsh_reload dirhistory)
 
 source $ZSH/oh-my-zsh.sh
 
-#yes, I suck.
+#NANO, FTW!
 export EDITOR='nano -w'
 
 # The next line updates PATH for the Google Cloud SDK.

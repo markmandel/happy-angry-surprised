@@ -2,7 +2,7 @@
 
 This is a Docker container that has all of the tools for developing this application.
 
-*Note:* This shell has only been tested on Linux. Pull requests are welcome. 
+*Note:* This shell has only been tested on Linux. Pull requests are welcome.
 
 ## Building the Shell
 
