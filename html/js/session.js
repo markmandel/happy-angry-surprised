@@ -22,8 +22,7 @@
 var Session = (function() {
     var loginDialog;
     var createDialog;
-    var googleProvider = false;
-    var firebaseProvider = false;
+    var loggedIn = false;
 
     /*
      * Firebase handler for when authentication state
@@ -35,14 +34,7 @@ var Session = (function() {
         //signin
         if (user) {
             console.log("I am now logged in");
-
-            if (user.providerData.length == 0) {
-                //if no auth provider, it's firebase (in this context)
-                firebaseProvider = true;
-            } else if (user.providerData[0].providerId == "google.com") {
-                googleProvider = true;
-            }
-
+            loggedIn = true;
             closeLoginDialog();
             document.querySelector("#login").style.display = "none";
             document.querySelector("#logout").style.display = "block";
@@ -50,12 +42,8 @@ var Session = (function() {
             Chat.onlogin();
             Game.onlogin();
         } else { //signout
-            if (googleProvider) {
-                gapi.auth2.getAuthInstance().signOut().then(function() {
-                    console.log('Google sign out');
-                    window.location.reload();
-                });
-            } else if (firebaseProvider) {
+            if (loggedIn) {
+                loggedIn = false;
                 window.location.reload();
             }
         }
@@ -82,14 +70,22 @@ var Session = (function() {
     }
 
     /*
-     * Sign the user in, with the given credentials,
-     * which come from a Firebase Auth Provider
+     * Sign in with you Google Account
      * */
-    function signIn(credential) {
-        firebase.auth().signInWithCredential(credential).then(function(user) {
-            console.log('Sign In Success', user);
-        }, function(error) {
-            console.error('Sign In Error', error);
+    function signInWithGoogle() {
+        console.log("attempting to sign in with Google");
+        var provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope("https://www.googleapis.com/auth/userinfo.email");
+        provider.addScope("https://www.googleapis.com/auth/userinfo.profile");
+
+        firebase.auth().signInWithPopup(provider).then(function(result) {
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            var token = result.credential.accessToken;
+            // The signed-in user info.
+            var user = result.user;
+
+        }).catch(function(error) {
+            console.log("Google Login error: ", error);
         });
     }
 
@@ -155,6 +151,9 @@ var Session = (function() {
             });
             document.querySelector("#sign-in").addEventListener("click", signInWithEmailandPassword);
 
+            //google login
+            document.querySelector("#google-signin img").addEventListener("click", signInWithGoogle);
+
             //create accounts
             createDialog = document.querySelector("#create-account-dialog");
             document.querySelector("#create-account").addEventListener("click", function() {
@@ -162,24 +161,5 @@ var Session = (function() {
             });
             document.querySelector("#entry-submit").addEventListener("click", submitCreateAccount);
         },
-
-        /*
-         * Google sign in
-         * */
-        googleSignin: function(googleUser) {
-            console.log("Google Signin");
-            var credential = firebase.auth.GoogleAuthProvider.credential({
-                'idToken': googleUser.getAuthResponse().id_token
-            });
-            signIn(credential);
-        }
     }
 })();
-
-/*
- * Having a global function for Google, makes it much easier to integrate
- * the Google sign in functionality.
- * */
-function googleSignin(googleUser) {
-    Session.googleSignin(googleUser);
-}

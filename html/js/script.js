@@ -27,6 +27,7 @@ firebase.initializeApp(Config.firebase);
 
 // Application starts
 window.onload = function() {
+    console.log("version: 0.2");
     UI.fillVertically();
     UI.init();
     Session.init();

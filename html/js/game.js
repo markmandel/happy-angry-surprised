@@ -256,7 +256,7 @@ var Game = (function() {
      *
      * */
     function getVisionEmotion(visionResult) {
-        if (!visionResult.responses || visionResult.responses.length != 1) {
+        if (!visionResult.responses || visionResult.responses.length != 1 || visionResult.responses[0].error) {
             console.log("Error in vision result:", visionResult);
             UI.snackbar({message: "Error getting Vision API Result"});
             return

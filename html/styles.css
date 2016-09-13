@@ -7,6 +7,10 @@
   margin-top: 20px;
 }
 
+#google-signin img {
+  cursor: pointer;
+}
+
 #google-signin strong {
   display: block;
   margin-bottom: 20px;
