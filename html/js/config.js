@@ -27,6 +27,7 @@ Config = function() {
             authDomain: "projectId.firebaseapp.com",
             databaseURL: "https://databaseName.firebaseio.com",
             storageBucket: "bucket.appspot.com",
+            messagingSenderId: "123456789"
         },
         // Replace with an API key for Google Cloud Vision API
         // DO NOT DO THIS IN PRODUCTION!!! For Demo purposes only.
